@@ -1,0 +1,310 @@
+/* ============================================================
+   HEALTHYSTITCH — the results band
+   The client before/after photographs, carried on the works wheel.
+
+   Only the section chrome lives here. The wheel itself is a shadcn component
+   and styles itself with Tailwind utilities, so the boundary is clean: this
+   file never reaches inside it.
+   ============================================================ */
+
+/* Padding on the section and a measure on the children, exactly as .proof does
+   it (proof.css:6-26). Both patterns put a child's left edge at
+   max(--gutter, (100vw - --measure) / 2) — 60px at 1440 — so the eyebrow here
+   lines up with the SOURCES block directly above it. Padding the children
+   instead would have indented them by a second gutter. */
+.shift {
+  --measure: 1320px;
+  padding: clamp(54px, 6.6vw, 104px) var(--gutter) clamp(40px, 4.4vw, 70px);
+  background: var(--background); /* #1b1d17 via .theme-dark-olive */
+  border-top: 1px solid var(--rule);
+}
+
+/* Same reveal as the proof section, so the band joins the existing rhythm
+   rather than starting a new one. The wheel is exempt: it writes its own
+   transforms every frame and a transition on the same property would fight it. */
+.shift > *:not(.shift__wheel) {
+  max-width: var(--measure);
+  margin-inline: auto;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 720ms ease, transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.shift.is-revealed > *:not(.shift__wheel) {
+  opacity: 1;
+  transform: none;
+}
+
+.shift.is-revealed > *:nth-child(3) {
+  transition-delay: 120ms;
+}
+
+/* ---------- Section head ---------- */
+
+.shift__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 clamp(18px, 1.8vw, 26px);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  color: var(--foreground);
+}
+
+.shift__rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background: rgba(245, 245, 241, 0.3);
+}
+
+.shift__headline {
+  margin: 0;
+  max-width: 21ch;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 4.4vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+/* The stitched underline, same brand mark as the proof headline — but lifted
+   to the brighter olive, because the dark ground swallows #69851f. */
+.shift__headline em {
+  font-style: italic;
+  color: #a7c05a;
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgba(167, 192, 90, 0.5);
+  text-underline-offset: 0.15em;
+}
+
+.shift__standfirst {
+  margin: clamp(16px, 1.6vw, 22px) 0 0;
+  max-width: 52ch;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 16.5px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+/* ---------- The wheel ---------- */
+
+/* Held to the same measure as everything else, which also keeps the index list
+   beside the wheel: left full bleed the ring stays the same size on a 1920px
+   monitor but the list goes with the right-hand edge, stranding it 300px clear
+   of the thing it indexes. The band behind is the same colour, so no seam. */
+.shift__wheel {
+  max-width: var(--measure);
+  margin-top: clamp(10px, 1.4vw, 24px);
+  margin-inline: auto;
+}
+
+/* ---------- The phone gallery ----------
+   TransformationsGallery.jsx, in place of the wheel on phones: a row of
+   photographs that scrolls sideways and stops on each one. */
+
+.shift__gallery {
+  --gap: 12px;
+  margin-top: clamp(20px, 5vw, 30px);
+}
+
+/* Full bleed: out through the section's side padding to the screen's edges,
+   so a photograph slides off the edge of the screen rather than vanishing at
+   the gutter. The snap points are inset by the gutter again, so the
+   photograph at rest lines up with the text above it. */
+.shift-gallery__track {
+  container-type: inline-size;
+  margin-inline: calc(-1 * var(--gutter));
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+
+.shift-gallery__track::-webkit-scrollbar {
+  display: none;
+}
+
+.shift-gallery__track:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: -2px;
+}
+
+/* The side padding is on the list, not the scroller: a scroller's own end
+   padding is not reliably part of what it scrolls. Positioned, because the
+   gallery measures the slides' offsetLeft from here. */
+.shift-gallery__list {
+  position: relative;
+  display: flex;
+  gap: var(--gap);
+  width: max-content;
+  padding: 0 var(--gutter);
+}
+
+/* One photograph across, and the edge of the next one showing in the
+   right-hand gutter. On a phone on its side the screen's height sets the
+   size instead, so a photograph and its caption fit on screen together.
+   The first rule is for browsers without container units, where the row is
+   the screen's width anyway. */
+.shift-gallery__slide {
+  flex: 0 0 auto;
+  width: min(calc(100vw - 2 * var(--gutter) - var(--gap)), 560px);
+  scroll-snap-align: start;
+}
+
+@supports (width: 1cqw) and (height: 1svh) {
+  .shift-gallery__slide {
+    width: min(
+      calc(100cqw - 2 * var(--gutter) - var(--gap)),
+      calc((100svh - 150px) * var(--ratio)),
+      560px
+    );
+  }
+}
+
+.shift-gallery__figure {
+  margin: 0;
+}
+
+/* The wheel's card: a hairline ring and a soft drop. The frame's shape is
+   TRANSFORMATION_GALLERY_RATIO (src/assets.js), so `cover` trims only the
+   blurred padding at the sides of each photograph. */
+.shift-gallery__frame {
+  aspect-ratio: var(--ratio);
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--card);
+  box-shadow:
+    0 0 0 1px var(--border),
+    0 22px 44px -26px rgba(0, 0, 0, 0.7);
+}
+
+.shift-gallery__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shift-gallery__caption {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+.shift-gallery__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.shift-gallery__count {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
+}
+
+.shift-gallery__count-now {
+  color: var(--foreground);
+}
+
+.shift-gallery__arrows {
+  display: flex;
+  gap: 10px;
+}
+
+/* 44px: a comfortable thumb target. */
+.shift-gallery__arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(245, 245, 241, 0.32);
+  border-radius: 999px;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background-color 200ms ease, opacity 200ms ease;
+}
+
+.shift-gallery__arrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+.shift-gallery__arrow:hover {
+  background: rgba(245, 245, 241, 0.08);
+}
+
+.shift-gallery__arrow[aria-disabled='true'] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.shift-gallery__arrow[aria-disabled='true']:hover {
+  background: none;
+}
+
+/* The page's focus ring is dark olive, which disappears on this band. */
+.shift-gallery__arrow:focus-visible {
+  outline-color: var(--foreground);
+}
+
+/* ---------- Disclaimer ---------- */
+
+/* The rule runs the full measure; the print inside it does not. A <p> on its
+   own cannot do both, and it is also a direct child of .shift, so a bare
+   `.shift__disclaimer { max-width: 68ch }` would lose to
+   `.shift > *:not(.shift__wheel)` — specificity (0,2,0), because :not() counts
+   its argument — and the small print would run 1320px wide, about 220
+   characters a line. */
+.shift__foot {
+  margin-top: clamp(26px, 2.8vw, 42px);
+  padding-top: 18px;
+  border-top: 1px dashed rgba(245, 245, 241, 0.2);
+}
+
+.shift__disclaimer {
+  margin: 0;
+  max-width: 68ch;
+  font-size: 13px;
+  line-height: 1.66;
+  color: var(--muted-foreground);
+}
+
+@media (max-width: 640px) {
+  .shift {
+    --measure: none;
+  }
+}
+
+/* ============================================================
+   Reduced motion — no reveal. The wheel drops its own easing in JS when the
+   same query matches, so it lands on an item instead of gliding there.
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .shift > *:not(.shift__wheel) {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .shift-gallery__arrow {
+    transition: none;
+  }
+}

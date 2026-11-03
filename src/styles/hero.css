@@ -1,0 +1,481 @@
+/* ============================================================
+   HEALTHYSTITCH — hero composition
+   ============================================================ */
+
+.hero {
+  /* Every "#top" link (the wordmark, Home, Get Started, the footer's Back to
+     top) targets this section, which starts below the nav. Offsetting by the
+     nav's height makes them land on the real top of the page, nav included. */
+  scroll-margin-top: var(--nav-h);
+  display: grid;
+  grid-template-columns: 43% 57%;
+  /* The nav is border-box, so its border is already inside --nav-h and the
+     hero lands exactly on the fold. */
+  min-height: calc(100vh - var(--nav-h));
+}
+
+/* ---------- Left panel: capsule visual ---------- */
+
+.hero__left {
+  position: relative;
+  overflow: hidden;
+  background: var(--panel-left);
+}
+
+.visual {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+}
+
+.visual__letters {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  /* Light: these are texture behind the capsule, and Fraunces at display size
+     is a good deal heavier than the hairline face they were drawn for. */
+  font-weight: 300;
+  /* Sized against the viewport rather than the root so the crop stays in
+     proportion to the panel at every width. */
+  font-size: clamp(5.5rem, 13vw, 14rem);
+  line-height: 1;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: var(--letters);
+  opacity: 0.85;
+  user-select: none;
+  pointer-events: none;
+}
+
+.visual__capsule {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  /* Deliberately wider than the panel: the capsule bleeds past both edges so
+     it dominates the column instead of floating in the middle of it. */
+  width: 116%;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.visual__tagline {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 28px;
+  max-width: 17ch;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.32;
+  color: var(--text);
+}
+
+/* ---------- Right panel: editorial column ---------- */
+
+.hero__right {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 32px var(--gutter) 28px;
+  background: var(--panel-right);
+}
+
+/* Two lines now, so it is sized for the longer one ("Stitch by stitch,") to
+   fill most of the column. No nowrap: if a line ever cannot fit, it wraps
+   rather than running out of the column. */
+.hero__headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 6vw, 6.25rem);
+  line-height: 1.06;
+  letter-spacing: -0.022em;
+  color: var(--headline);
+}
+
+.hero__line {
+  display: block;
+}
+
+.hero__headline em {
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ---------- Goals / Health divider ---------- */
+
+/* 18px, up from 14: "by" and "you" have descenders, which "Wellness Walk"
+   did not, and they crowded the rule. */
+.hero__rule {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 18px;
+}
+
+.hero__rule-label {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.hero__rule-line {
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* ============================================================
+   Lifestyle slideshow
+   Three photographs on a two-second timer, inside the organic mask.
+   ============================================================ */
+
+.slides {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 20px;
+}
+
+/* Every photograph inside this frame is absolutely positioned, which is what
+   keeps the frame's height out of its own content's height. Sizing it from
+   in-flow children makes the row height and the frame height depend on each
+   other, and Chrome resolves that by growing the hero past the fold on
+   768px-tall laptops. */
+.slides__frame {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 170px;
+  clip-path: url(#organic-mask);
+  overflow: hidden;
+  background: var(--letters);
+}
+
+.slides__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 900ms ease, transform 1700ms cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 1;
+}
+
+.slides__image.is-active {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 3;
+}
+
+/* The outgoing frame is held at full opacity underneath the incoming one for
+   the length of the crossfade, so the panel colour never shows through the
+   middle of it. Killing its transition lets it snap back to hidden on the
+   next advance, by which point it is covered and the snap is invisible. */
+.slides__image.is-previous {
+  opacity: 1;
+  transform: scale(1);
+  transition: none;
+  z-index: 2;
+}
+
+.slides__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex: 0 0 auto;
+  margin-top: 11px;
+}
+
+.slides__caption {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 15.5px;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.slides__index {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--text-soft);
+}
+
+/* Three stitches rather than three dots: the active one runs long. */
+.slides__stitches {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 5px;
+}
+
+.slides__stitch {
+  display: block;
+  /* Vertical padding buys a 24px pointer target without drawing a box. */
+  padding: 8px 2px;
+  cursor: pointer;
+}
+
+.slides__stitch-bar {
+  display: block;
+  width: 17px;
+  height: 2px;
+  background: rgba(56, 56, 50, 0.3);
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1), background-color 300ms ease;
+}
+
+.slides__stitch:hover .slides__stitch-bar {
+  background: var(--text);
+}
+
+.slides__stitch.is-active .slides__stitch-bar {
+  width: 30px;
+  background: var(--olive-ink);
+}
+
+/* ---------- Nutrition pillars ---------- */
+
+.pillars {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+  gap: 44px;
+  margin-top: 24px;
+  flex: 0 0 auto;
+}
+
+.pillars__title {
+  margin: 0 0 9px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.18;
+  color: var(--text);
+}
+
+.pillars__copy {
+  margin: 0;
+  max-width: 38ch;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+
+.pillars__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(56, 56, 50, 0.32);
+}
+
+.pillars__num {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-soft);
+}
+
+.pillars__name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.pillars__icon {
+  display: inline-flex;
+  color: var(--text);
+}
+
+.pillars__icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ============================================================
+   Short desktop viewports (1366x768 class laptops)
+   Tightens the vertical rhythm so the hero still lands in one screen.
+   ============================================================ */
+
+@media (min-width: 641px) and (max-height: 800px) {
+  .hero__right {
+    padding-top: 24px;
+    padding-bottom: 22px;
+  }
+
+  .slides {
+    margin-top: 16px;
+  }
+
+  .slides__frame {
+    min-height: 140px;
+  }
+
+  .slides__meta {
+    margin-top: 9px;
+  }
+
+  .pillars {
+    margin-top: 18px;
+  }
+
+  .pillars__title {
+    font-size: 20px;
+  }
+
+  .pillars__row {
+    padding: 6px 0;
+  }
+}
+
+/* ============================================================
+   Tablet
+   ============================================================ */
+
+@media (max-width: 1100px) {
+  .pillars {
+    gap: 28px;
+  }
+
+  .pillars__title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 40% 60%;
+    min-height: 0;
+  }
+
+  .visual__tagline {
+    bottom: 20px;
+    font-size: 13px;
+  }
+
+  .hero__headline {
+    font-size: clamp(2.2rem, 6.4vw, 3.6rem);
+  }
+
+  .slides__frame {
+    min-height: 170px;
+  }
+
+  .slides__caption {
+    font-size: 13px;
+  }
+
+  .pillars {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .pillars__copy {
+    max-width: none;
+  }
+}
+
+/* ============================================================
+   Mobile — panels stack, visual identity preserved
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero__left {
+    /* Keeps the capsule panel a deliberate shape rather than a thin strip. */
+    aspect-ratio: 1 / 1;
+    min-height: 300px;
+  }
+
+  .visual__letters {
+    top: 44%;
+  }
+
+  .visual__capsule {
+    width: 94%;
+  }
+
+  .hero__right {
+    padding: 26px var(--gutter) 28px;
+  }
+
+  .hero__headline {
+    /* Full width here, so sized off the screen: "Stitch by stitch," still
+       fits on one line at 320px. */
+    font-size: clamp(1.9rem, 11.4vw, 3.6rem);
+  }
+
+  .hero__rule {
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .slides {
+    /* Stacked layout: give the photo a natural shape instead of filling
+       leftover column space. */
+    flex: 0 0 auto;
+    margin-top: 20px;
+  }
+
+  .slides__frame {
+    flex: 0 0 auto;
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+  }
+
+  .pillars {
+    margin-top: 26px;
+    gap: 20px;
+  }
+
+  .pillars__title {
+    font-size: 21px;
+  }
+
+  .pillars__row {
+    padding: 10px 0;
+  }
+}
+
+/* ============================================================
+   Reduced motion — the slideshow timer is already off in JS; this stops the
+   crossfade and the settle on manual advances too.
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .slides__image,
+  .slides__stitch-bar {
+    transition: none;
+  }
+
+  .slides__image {
+    transform: none;
+  }
+}

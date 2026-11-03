@@ -1,0 +1,243 @@
+/* ============================================================
+   HEALTHYSTITCH — About us
+   Mitali's story beside her portrait. The portrait holds its place while the
+   story scrolls past it, so the face stays next to the words.
+   ============================================================ */
+
+/* The rule on top is every band's: the reviews above share this background,
+   so without it the two sections would run into each other. */
+.about {
+  --measure: 1320px;
+  padding: clamp(54px, 6.6vw, 104px) var(--gutter) clamp(70px, 8vw, 132px);
+  background: var(--canvas);
+  border-top: 1px solid var(--rule);
+}
+
+.about > * {
+  max-width: var(--measure);
+  margin-inline: auto;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 720ms ease, transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about.is-revealed > * {
+  opacity: 1;
+  transform: none;
+}
+
+.about.is-revealed > *:nth-child(2) {
+  transition-delay: 120ms;
+}
+
+/* ---------- Section head ---------- */
+
+.about__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 clamp(18px, 1.8vw, 26px);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.about__rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--rule);
+}
+
+.about__headline {
+  margin: 0;
+  max-width: 21ch;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 4.4vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.about__headline em {
+  font-style: italic;
+  color: var(--headline);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgba(105, 133, 31, 0.5);
+  text-underline-offset: 0.15em;
+}
+
+/* ---------- Portrait + story ---------- */
+
+.about__body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(40px, 6vw, 112px);
+  /* Start-aligned, so the portrait is shorter than its grid row and has room
+     to stick inside it. Stretched, sticky would have nowhere to go. */
+  align-items: start;
+  margin-top: clamp(34px, 3.6vw, 60px);
+}
+
+/* Needs .canvas to clip rather than hide its overflow: overflow: hidden on
+   any ancestor makes that ancestor the sticky container, and it never
+   scrolls, so the portrait would never stick. See global.css. */
+.about__portrait {
+  position: sticky;
+  top: 36px;
+  justify-self: center;
+  width: min(100%, 380px);
+  margin: 0;
+}
+
+/* The arch: the top corners' radii are half the width across and the same
+   length down (40% of a 4:5 height), so the top is a true semicircle at any
+   width. The dashed ring outside it is the stitch, again. */
+.about__frame {
+  position: relative;
+  padding: 12px;
+}
+
+.about__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1.5px dashed rgba(105, 133, 31, 0.55);
+  border-radius: 50% 50% 32px 32px / 40% 40% 32px 32px;
+  pointer-events: none;
+}
+
+.about__frame img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 50% 50% 22px 22px / 40% 40% 22px 22px;
+  background: var(--letters);
+}
+
+.about__caption {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-soft);
+}
+
+.about__caption-name {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 24px;
+  font-weight: 450;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.about__story {
+  max-width: 62ch;
+  font-size: 17px;
+  line-height: 1.78;
+  color: var(--text);
+}
+
+.about__story p {
+  margin: 0 0 1.05em;
+}
+
+.about__hello {
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 2.3vw, 2.2rem);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+}
+
+.about__story .about__hello {
+  margin-bottom: 0.85em;
+}
+
+/* What the whole story turns on, so it is set apart: display italic in the
+   olive that small type can carry, on a stitched rule. */
+.about__story .about__realisation {
+  margin: 1.5em 0;
+  padding: 6px 0 6px clamp(18px, 2vw, 26px);
+  border-left: 2px dashed var(--headline);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.3rem, 1.85vw, 1.7rem);
+  line-height: 1.42;
+  color: var(--olive-ink);
+}
+
+.about__you {
+  font-weight: 700;
+  color: var(--olive-ink);
+}
+
+.about__story .about__creator {
+  margin-top: 1.5em;
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 2.4vw, 2.3rem);
+  font-weight: 400;
+  line-height: 1.24;
+  letter-spacing: -0.012em;
+}
+
+/* Display size, so the brighter brand olive is legible here (large-text
+   contrast); at body size above it stays on --olive-ink. */
+.about__creator .about__you {
+  font-weight: 600;
+  color: var(--headline);
+}
+
+.about__story .about__signoff {
+  margin: 1.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px dashed var(--hairline);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 1.5vw, 1.4rem);
+  line-height: 1.45;
+  color: var(--text-soft);
+}
+
+/* ---------- Narrow screens ---------- */
+
+@media (max-width: 860px) {
+  .about__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Stacked, there is nothing beside it to stay level with. */
+  .about__portrait {
+    position: static;
+    width: min(78%, 320px);
+  }
+
+  .about__story {
+    font-size: 16.5px;
+  }
+}
+
+@media (max-width: 640px) {
+  .about {
+    --measure: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -1,0 +1,348 @@
+/* ============================================================
+   HEALTHYSTITCH — enquiry form
+   The visitor's details, sent to Mitali through their own WhatsApp or
+   email app. The site has no server: nothing is stored.
+   ============================================================ */
+
+/* Same section pattern as every band above: padding on the section, a
+   measure on the children, a rule on top. */
+.enquiry {
+  --measure: 1320px;
+  padding: clamp(54px, 6.6vw, 104px) var(--gutter) clamp(60px, 7vw, 116px);
+  background: var(--canvas);
+  border-top: 1px solid var(--rule);
+}
+
+.enquiry > * {
+  max-width: var(--measure);
+  margin-inline: auto;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 720ms ease, transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.enquiry.is-revealed > * {
+  opacity: 1;
+  transform: none;
+}
+
+.enquiry.is-revealed > *:nth-child(2) {
+  transition-delay: 120ms;
+}
+
+/* ---------- Section head ---------- */
+
+.enquiry__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 clamp(22px, 2.4vw, 36px);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.enquiry__rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* ---------- Intro + form ---------- */
+
+.enquiry__body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(32px, 5vw, 96px);
+  align-items: start;
+}
+
+.enquiry__headline {
+  margin: 0;
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 3.9vw, 4rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.enquiry__headline em {
+  font-style: italic;
+  color: var(--headline);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgba(105, 133, 31, 0.5);
+  text-underline-offset: 0.15em;
+}
+
+.enquiry__standfirst {
+  margin: clamp(16px, 1.6vw, 22px) 0 0;
+  max-width: 40ch;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--text-soft);
+}
+
+.enquiry__steps {
+  margin-top: clamp(26px, 2.8vw, 40px);
+  max-width: 44ch;
+}
+
+.enquiry__steps li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px dashed var(--hairline);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.enquiry__steps li:last-child {
+  border-bottom: 1px dashed var(--hairline);
+}
+
+.enquiry__step-num {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--olive-ink);
+}
+
+/* ---------- The form ---------- */
+
+.enquiry__form {
+  padding: clamp(22px, 3vw, 40px);
+  border: 1px solid rgba(56, 56, 50, 0.14);
+  border-radius: 24px;
+  background: #fbfbf8;
+  box-shadow: 0 24px 48px -36px rgba(34, 35, 31, 0.45);
+}
+
+.enquiry__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 18px;
+}
+
+.enquiry__field--wide {
+  grid-column: 1 / -1;
+}
+
+.enquiry__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.enquiry__optional {
+  font-weight: 400;
+  color: var(--text-soft);
+}
+
+/* The page's own olive focus ring (global.css) marks the focused field;
+   the border darkens with it. */
+.enquiry__control {
+  display: block;
+  width: 100%;
+  min-height: 50px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(56, 56, 50, 0.32);
+  border-radius: 12px;
+  background: #fff;
+  font: inherit;
+  /* 16px: anything smaller and iPhones zoom the page in on focus. */
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--text);
+  transition: border-color 160ms ease;
+}
+
+.enquiry__control::placeholder {
+  color: #8a8a80;
+}
+
+.enquiry__control:hover {
+  border-color: rgba(56, 56, 50, 0.55);
+}
+
+.enquiry__control:focus {
+  border-color: var(--olive-ink);
+}
+
+textarea.enquiry__control {
+  min-height: 128px;
+  resize: vertical;
+}
+
+select.enquiry__control {
+  appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322231f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 18px;
+  cursor: pointer;
+}
+
+select.enquiry__control.is-placeholder {
+  color: var(--text-soft);
+}
+
+select.enquiry__control option {
+  color: var(--text);
+}
+
+/* #b3261e, and #a3281d for the message: 10:1 on the form's ground. */
+.enquiry__control[aria-invalid='true'] {
+  border-color: #b3261e;
+}
+
+.enquiry__error {
+  margin: 7px 0 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #a3281d;
+}
+
+.enquiry__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.enquiry__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 24px 0 20px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+
+.enquiry__btn:hover {
+  transform: translateY(-1px);
+}
+
+.enquiry__btn-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+}
+
+/* The floating button's green, with near-black text: 5.8:1. White on this
+   green would be 3.1:1, too faint for text this size. */
+.enquiry__btn--whatsapp {
+  background: #1da851;
+  color: #0b1a10;
+}
+
+.enquiry__btn--whatsapp:hover {
+  background: #25d366;
+}
+
+.enquiry__btn--email {
+  border: 1px solid var(--rule);
+  color: var(--text);
+}
+
+.enquiry__btn--email:hover {
+  background: rgba(56, 56, 50, 0.06);
+}
+
+/* The live region stays in the page with nothing in it; only the message
+   inside takes up room. */
+.enquiry__status p {
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--headline);
+  border-radius: 10px;
+  background: rgba(105, 133, 31, 0.1);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.enquiry__status a {
+  font-weight: 600;
+  color: var(--olive-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.enquiry__privacy {
+  margin: 18px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+
+/* ---------- Narrow screens ---------- */
+
+@media (max-width: 900px) {
+  .enquiry__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .enquiry__headline {
+    max-width: 18ch;
+  }
+}
+
+@media (max-width: 640px) {
+  .enquiry {
+    --measure: none;
+  }
+
+  .enquiry__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Full-width buttons: bigger targets for a thumb. */
+  .enquiry__actions {
+    flex-direction: column;
+  }
+
+  .enquiry__btn {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enquiry > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .enquiry__control,
+  .enquiry__btn {
+    transition: none;
+  }
+
+  .enquiry__btn:hover {
+    transform: none;
+  }
+}

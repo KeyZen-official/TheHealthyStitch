@@ -1,0 +1,156 @@
+/* ============================================================
+   HEALTHYSTITCH — floating WhatsApp button
+   Fixed to the bottom-right corner, above everything else on the page.
+   ============================================================ */
+
+:root {
+  --fab-size: 60px;
+  --fab-gap: clamp(16px, 2vw, 28px);
+}
+
+.wa-fab {
+  position: fixed;
+  /* Clear of the iPhone home bar and of the rounded corners in landscape. */
+  right: calc(var(--fab-gap) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--fab-gap) + env(safe-area-inset-bottom, 0px));
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* The link is only as big as the circle until the label is showing, so
+     the empty space where the label will appear is not a click target. */
+  pointer-events: none;
+  animation: wa-fab-in 520ms cubic-bezier(0.22, 1, 0.36, 1) 700ms both;
+}
+
+.wa-fab__button,
+.wa-fab__label {
+  pointer-events: auto;
+}
+
+/* A deeper green than the logo's #25D366, which carries a white glyph at only
+   2:1. This one is 3.1:1, still unmistakably WhatsApp. */
+.wa-fab__button {
+  display: grid;
+  place-items: center;
+  width: var(--fab-size);
+  height: var(--fab-size);
+  border-radius: 50%;
+  background: #1da851;
+  color: #fff;
+  box-shadow:
+    0 14px 28px -10px rgba(17, 27, 33, 0.5),
+    0 3px 8px rgba(17, 27, 33, 0.18);
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 220ms ease;
+}
+
+.wa-fab__icon {
+  width: 32px;
+  height: 32px;
+}
+
+.wa-fab:hover .wa-fab__button {
+  transform: translateY(-2px) scale(1.05);
+  background: #178f45;
+}
+
+/* Hidden by default, out of the hit area; slides out on hover or focus. */
+.wa-fab__label {
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: #111b21;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  /* The hairline is for the dark bands, where the pill and the page are
+     nearly the same colour. */
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 10px 22px -12px rgba(17, 27, 33, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(10px);
+  transition:
+    opacity 200ms ease,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 260ms;
+}
+
+.wa-fab:hover .wa-fab__label,
+.wa-fab:focus-visible .wa-fab__label {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 200ms ease,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s;
+}
+
+.wa-fab.is-hushed .wa-fab__label {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* The page's olive focus ring disappears on dark bands, and this button
+   floats over light and dark alike: a white ring inside a dark one shows on
+   both. Drawn on the circle, not the link, which also wraps the label. */
+.wa-fab:focus-visible {
+  outline: none;
+}
+
+.wa-fab:focus-visible .wa-fab__button {
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 6px #111b21,
+    0 14px 28px -10px rgba(17, 27, 33, 0.5);
+}
+
+@keyframes wa-fab-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Phones: a touch smaller, so it covers less of a narrow screen. There is no
+   hover on touch, so the label never shows there. */
+@media (max-width: 640px) {
+  :root {
+    --fab-size: 56px;
+  }
+
+  .wa-fab__icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-fab {
+    animation: none;
+  }
+
+  .wa-fab__button,
+  .wa-fab__label {
+    transition: none;
+  }
+
+  .wa-fab:hover .wa-fab__button {
+    transform: none;
+  }
+}
+
+@media print {
+  .wa-fab {
+    display: none;
+  }
+}

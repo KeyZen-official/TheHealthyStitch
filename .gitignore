@@ -1,0 +1,16 @@
+powershell.exe
+node_modules
+dist
+dist-ssr
+tmp_candidates
+*.local
+.DS_Store
+.vite
+__pycache__/
+*.pyc
+
+# Original client photographs, straight off a phone and still carrying their
+# EXIF — which routinely includes the GPS coordinates of where it was taken.
+# tools/prepare_transformations.py re-encodes them into public/ without it.
+# The originals are identifiable personal data: keep them out of the repo.
+assets_src/

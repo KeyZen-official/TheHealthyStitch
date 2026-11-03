@@ -1,0 +1,358 @@
+/* ============================================================
+   HEALTHYSTITCH — site footer
+   A last call to get in touch, then contact, section links, social
+   profiles and the small print, on the results band's dark olive.
+   Colours come from .theme-dark-olive in styles/tailwind.css.
+   ============================================================ */
+
+/* The bottom padding is the floating WhatsApp button's footprint (size plus
+   the gap on both sides), so at the very end of the page nothing in the
+   footer can sit underneath it. */
+.site-footer {
+  padding: clamp(60px, 7vw, 112px) var(--gutter)
+    calc(var(--fab-size) + var(--fab-gap) * 2 + env(safe-area-inset-bottom, 0px));
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Same measure as every band above, so the footer hangs off the same left
+   edge as the section eyebrows. */
+.site-footer__inner {
+  max-width: 1320px;
+  margin-inline: auto;
+}
+
+/* The page's olive focus ring is close to invisible on this ground. */
+.site-footer :focus-visible {
+  outline-color: var(--ring);
+}
+
+/* ---------- Get in touch ---------- */
+
+.site-footer__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 clamp(18px, 1.8vw, 26px);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+}
+
+.site-footer__rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background: rgba(245, 245, 241, 0.3);
+}
+
+.site-footer__cta-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 28px 48px;
+}
+
+.site-footer__headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 4.4vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.site-footer__headline em {
+  font-style: italic;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgba(167, 192, 90, 0.5);
+  text-underline-offset: 0.15em;
+}
+
+.site-footer__lead {
+  margin: clamp(14px, 1.4vw, 20px) 0 0;
+  max-width: 46ch;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.site-footer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.site-footer__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 24px 0 20px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  transition: background-color 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+
+.site-footer__btn:hover {
+  transform: translateY(-1px);
+}
+
+.site-footer__btn-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+}
+
+/* The floating button's green, with near-black text: 5.6:1, where white on
+   this green would be 3.1:1 and too faint for text this size. */
+.site-footer__btn--whatsapp {
+  background: #1da851;
+  color: #0b1a10;
+}
+
+.site-footer__btn--whatsapp:hover {
+  background: #25d366;
+}
+
+.site-footer__btn--email {
+  border: 1px solid rgba(245, 245, 241, 0.4);
+  color: var(--foreground);
+}
+
+.site-footer__btn--email:hover {
+  border-color: var(--foreground);
+  background: rgba(245, 245, 241, 0.07);
+}
+
+/* ---------- Columns ---------- */
+
+.site-footer__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) repeat(3, minmax(0, 1fr));
+  gap: 40px;
+  margin-top: clamp(48px, 5vw, 84px);
+  padding-top: clamp(36px, 3.6vw, 56px);
+  border-top: 1px dashed rgba(245, 245, 241, 0.2);
+}
+
+.site-footer__wordmark {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 2.5vw, 36px);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.015em;
+}
+
+.site-footer__wordmark em {
+  font-style: italic;
+  font-weight: 560;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgba(167, 192, 90, 0.55);
+  text-underline-offset: 0.2em;
+}
+
+.site-footer__motto {
+  margin: 18px 0 0;
+  max-width: 24ch;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+}
+
+.site-footer__title {
+  margin: 0 0 18px;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--muted-foreground);
+}
+
+.site-footer__list {
+  display: grid;
+  gap: 14px;
+}
+
+.site-footer__list a {
+  font-size: 15px;
+  line-height: 1.4;
+  transition: color 180ms ease;
+}
+
+.site-footer__list a:hover {
+  color: var(--accent);
+}
+
+.site-footer__contact {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 100%;
+}
+
+.site-footer__contact-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--accent);
+}
+
+.site-footer__contact-kind {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted-foreground);
+}
+
+/* An address will not fit some columns whole; let it break at any point
+   rather than push the column wider. */
+.site-footer__contact-value {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.site-footer__social {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.site-footer__social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 18px 0 13px;
+  border: 1px solid rgba(245, 245, 241, 0.25);
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.site-footer__social-link:hover {
+  border-color: var(--accent);
+  background: rgba(167, 192, 90, 0.1);
+}
+
+.site-footer__social-icon {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+}
+
+/* ---------- Small print ---------- */
+
+.site-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 28px;
+  margin-top: clamp(44px, 4.4vw, 70px);
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.site-footer__bottom p {
+  margin: 0;
+}
+
+.site-footer__credit a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.site-footer__credit a:hover {
+  color: var(--foreground);
+}
+
+.site-footer__top {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.site-footer__top:hover {
+  color: var(--accent);
+}
+
+.site-footer__top-icon {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---------- Breakpoints ---------- */
+
+@media (max-width: 1180px) {
+  .site-footer__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 44px;
+  }
+}
+
+@media (max-width: 860px) {
+  .site-footer__cta-row {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-footer__grid {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 36px;
+  }
+
+  /* Full-width buttons: bigger targets for a thumb. */
+  .site-footer__actions {
+    flex-direction: column;
+  }
+
+  .site-footer__btn {
+    justify-content: center;
+  }
+
+  .site-footer__top {
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-footer__btn {
+    transition: none;
+  }
+
+  .site-footer__btn:hover {
+    transform: none;
+  }
+}

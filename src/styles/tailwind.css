@@ -1,0 +1,95 @@
+/* ============================================================
+   HEALTHYSTITCH — Tailwind v4 entry
+   ============================================================
+
+   Preflight is deliberately NOT imported.
+
+   Tailwind's Preflight is a global reset: it strips heading sizes, list
+   markers, element margins and border widths across the whole document. This
+   site is not a Tailwind site — global.css, hero.css and proof.css are
+   hand-written editorial CSS with their own reset and their own type scale,
+   and Preflight would quietly flatten the hero headline, the promises list
+   and every dashed rule in the proof section.
+
+   Importing only the theme and the utilities layer is the documented way to
+   opt out, so Tailwind adds utility classes for the new component and
+   changes nothing that already renders.
+   See https://github.com/tailwindlabs/tailwindcss/discussions/17063
+   ------------------------------------------------------------ */
+
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* Tailwind v4 scans source files itself, but only those it can reach from the
+   stylesheet's own directory. This sheet lives in src/styles, so point the
+   scanner at src. */
+@source '../../src';
+
+/* ---------- shadcn token contract ----------
+   shadcn components reference semantic colours (bg-background, text-foreground,
+   text-muted-foreground, border-border) rather than literal palette values.
+   `inline` makes each utility compile to var(--token), so overriding the
+   variable on an ancestor re-themes everything inside it — which is how the
+   transformations band below runs dark inside an otherwise light page. */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+}
+
+/* The brand faces, as literal values rather than `var(--font-display)`.
+   Tailwind's own token for the `font-display` utility IS `--font-display`, the
+   same name global.css uses, so aliasing it to itself would be a circular
+   reference and resolve to nothing. The values are kept identical to the
+   --font-* tokens at the top of global.css; change both together. */
+@theme {
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+/* Light defaults, mapped onto the existing Healthystitch palette so any
+   future shadcn component lands in the brand rather than in stock stone. */
+:root {
+  --background: #f5f5f1; /* --canvas */
+  --foreground: #22231f; /* --text */
+  --card: #f7f7f4; /* --panel-right */
+  --card-foreground: #22231f;
+  --muted: #eff1e9; /* --panel-proof */
+  --muted-foreground: #66665e; /* --text-soft */
+  --accent: #3f5213; /* --olive-ink */
+  --accent-foreground: #f5f5f1;
+  --border: rgba(56, 56, 50, 0.22); /* --hairline */
+  --ring: #3f5213;
+}
+
+/* ---------- The dark band ----------
+   The wheel is a perspective object: cards rotate away from the reader and run
+   off the top and bottom of the frame. On the page's warm off-white those depth
+   cues all but vanish, so the section gets its own ground — a deep olive
+   charcoal pulled from --text/--rule rather than a generic black, so it reads
+   as the same brand turning the lights down. */
+.theme-dark-olive {
+  --background: #1b1d17;
+  --foreground: #f5f5f1;
+  --card: #23261e;
+  --card-foreground: #f5f5f1;
+  --muted: #23261e;
+  --muted-foreground: #9fa193; /* 6.3:1 on the band */
+  --accent: #a7c05a;
+  --accent-foreground: #1b1d17;
+  --border: rgba(245, 245, 241, 0.14);
+  --ring: #a7c05a;
+
+  color: var(--foreground);
+}
