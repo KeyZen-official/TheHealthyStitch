@@ -1,4 +1,4 @@
-# Healthystitch — Wellness Walk
+# TheHealthyStitch — Wellness Walk
 
 Editorial landing page for a vegetarian nutrition service. React + Vite, plain
 JavaScript, hand-written CSS, no backend.
@@ -31,7 +31,7 @@ public/
     lifestyle-harvest.jpg      hero slide 2 (2200x1464)
     lifestyle-nourish.jpg      hero slide 3 (2200x1468)
     produce/*.png              six cut-outs, reused by the plate diagram
-    transformations/*.jpg      seven client before/after cards — CONSENT, see ATTRIBUTION
+    transformations/*.jpg      six client before/after cards — CONSENT, see ATTRIBUTION
     about/mitali.jpg           About portrait, 512x640, from tools/prepare_portrait.py
     wellness-lifestyle.jpg     unreferenced original of slide 1 — see ATTRIBUTION
     ATTRIBUTION.md             image credits + licence warning
@@ -54,19 +54,20 @@ src/
     useReducedMotion.js        tracks prefers-reduced-motion, live
     useInView.js               latching IntersectionObserver for the reveal
     useMediaQuery.js           tracks any media query, live (the phone switch)
+    useDragScroll.js           lets a mouse drag a sideways row (the reviews)
   components/
     ui/
       works-wheel.tsx          the ring/drum wheel — Tailwind, TypeScript
     TransformationsSection.jsx the results band: the wheel, or on phones the gallery
     TransformationsGallery.jsx the same photographs on phones, in a row you swipe
-    ReviewsSection.jsx         WhatsApp reviews as chat cards on a looping strip
+    ReviewsSection.jsx         WhatsApp reviews as chat cards, in a row you slide
     AboutSection.jsx           Mitali's story beside her portrait
-    EnquirySection.jsx         the enquiry form: sends by WhatsApp or email, stores nothing
+    EnquirySection.jsx         the enquiry form: opens WhatsApp with the enquiry typed out
     SiteFooter.jsx             get in touch, contact, section links, social, small print
     WhatsAppButton.jsx         the floating chat button, bottom-right on every screen
     icons/BrandIcons.jsx       WhatsApp, Instagram and Facebook marks (inline SVG)
-    Navbar.jsx                 two-tone wordmark (no logo), five links, Get Started;
-                               the links fold behind a Menu button below 960px
+    Navbar.jsx                 logo and two-tone wordmark, seven links, Get Started;
+                               the links fold behind a Menu button below 1200px
     HeroSection.jsx            43/57 grid, two-line headline, GOALS/HEALTH divider
     NutritionVisual.jsx        decorative letters, capsule, tagline
     LifestyleSlides.jsx        three photographs on a 2s timer, organic clip path
@@ -80,7 +81,7 @@ src/
     proof.css                  proof section, plate dial, accordion
     transformations.css        the results band's chrome and the phone gallery
                                (not the wheel)
-    reviews.css                review cards, the looping strip, reduced-motion row
+    reviews.css                review cards, the sliding row and its arrows
     about.css                  About layout, arch portrait, story typography
     enquiry.css                the enquiry form and its two send buttons
     whatsapp.css               the floating button; defines --fab-size and --fab-gap
@@ -91,7 +92,7 @@ tools/                         asset build + visual verification scripts
 ## Page order
 
 Hero, About us, Real clients (the before/after wheel), client reviews, Why
-Healthystitch, the enquiry form, then the footer. `App.jsx` sets the order,
+TheHealthyStitch, the enquiry form, then the footer. `App.jsx` sets the order,
 and the footer's Explore links follow it.
 
 ## Design tokens
@@ -184,8 +185,7 @@ cleanly at 834px and 390px.
 `ProofSection.jsx` + `VegetarianPlate.jsx`, after the reviews. The argument
 that a vegetarian plate moves measurable numbers, in four bands: the service
 promises, the plate diagram, published figures, and the mechanisms behind
-them. The nav's Plans link lands here: there is no plans section, and this
-is the one that says what a plan involves.
+them.
 
 The plate dial derives its orbit, piece size and SVG rim from one length
 (`--dial`), so everything stays in register at any size. The dashed rim is the
@@ -257,7 +257,7 @@ instead. So on phones `TransformationsSection.jsx` renders
   showing at the right, in an ordinary sideways scroller with CSS snap
   points. Swiping, momentum and the page's own up-and-down scrolling are all
   left to the browser, so a thumb is never caught by the section. Arrows and
-  a counter ("02 / 07") sit underneath for anyone not swiping, and the
+  a counter ("02 / 06") sit underneath for anyone not swiping, and the
   counter is a polite live region for screen readers. The row takes keyboard
   focus, so the arrow keys move it too.
 - **The frame is nearly square** (`TRANSFORMATION_GALLERY_RATIO`, 1.02), not
@@ -268,7 +268,7 @@ instead. So on phones `TransformationsSection.jsx` renders
   warns if a photograph wider than the frame arrives.
 - On a phone on its side the screen's height sets the size, so two or three
   photographs are on screen at once and the counter shows the range
-  ("04–06 / 07").
+  ("04–06 / 06").
 
 ### Why Tailwind and TypeScript are here, and why they are contained
 
@@ -315,7 +315,7 @@ must not go on a dark background. They are not used here.
 `CARD_RATIO` stays at the component's native `1.45` even though the supplied
 photographs are square to portrait. Square cards looked obvious and were wrong:
 the ring's radius is set in card *heights*, so a square card makes the ring
-about 119% of the stage and the seven cards collide. At 1.45 the ring is ~109%
+about 119% of the stage and the cards collide. At 1.45 the ring is ~109%
 — the slight bleed off the top and bottom the component is designed around.
 
 The photographs are fitted to the landscape frame by the script below, which
@@ -385,28 +385,33 @@ results band. Section eyebrows carry a label and a rule only; the
 "No. 02"–"No. 05" section numbers were removed.
 
 **Reviews, `ReviewsSection.jsx`.** Client messages from WhatsApp,
-set as chat cards (bubbles, timestamps, the beige chat background) on a strip
-that runs sideways in a loop. The text is transcribed word for word from the
-supplied screenshots, typos and emoji included. Only the clients' own messages
+set as chat cards (bubbles, timestamps, the beige chat background) in a row
+the visitor slides sideways. Nothing moves on its own. The text was
+transcribed from the supplied screenshots, then corrected for spelling,
+grammar and capitals without changing what anyone said, and the note under
+the row says so. Only the clients' own messages
 are kept, under first names only: no surnames, relationships, profile photos
 or replies. Jalpa's messages are in Gujarati written in English letters, so
 her card carries a short translation in a yellow note.
 
-- The loop is two identical lists slid left by exactly one list's width, so
-  the join never shows. The copy is `aria-hidden`, so a screen reader hears
-  each review once.
-- The strip stops under the pointer, and a real Pause button stops it for
-  keyboard and touch users. Moving content that cannot be stopped fails
-  WCAG 2.2.2, and hover alone is not a way to stop it on a phone.
-- With reduced motion the strip stands still and becomes a row you scroll
-  sideways (focusable, so arrow keys work). The copy and the button are not
-  rendered.
+- The row is an ordinary sideways scroller with CSS snap points, so a finger
+  or a trackpad slides it natively and it comes to rest on a card.
+  `scroll-snap-stop: always` makes each swipe move on by one review, however
+  hard the flick.
+- A mouse can drag it (`src/hooks/useDragScroll.js`). Snapping is switched
+  off while it drags and until it lands, or the browser fights the pointer;
+  a short nudge springs back.
+- The arrows beside the headline step one card at a time, for anyone not
+  swiping, and the row takes keyboard focus, so the arrow keys move it too.
+  On a screen wide enough for every card (about 1900px), the arrows and the
+  tab stop go away.
 - To add a review, add an entry to `REVIEWS` at the top of the component.
 
 **About, `AboutSection.jsx`.** Mitali's story, exactly as she wrote
-it, beside her portrait. The greeting and the caption give her full name,
-Mitali Shah. The footer's "About us" link lands here. The portrait is
-the diploma photograph from the results wheel, cropped to 4:5 by
+it, beside her portrait. The greeting gives her full name, and the caption
+under the portrait reads "Mitali Shah, Founder of TheHealthyStitch". The
+footer's "About us" link lands here. The portrait is the diploma
+photograph (no longer one of the results cards), cropped to 4:5 by
 `tools/prepare_portrait.py` (original in `assets_src/about/`). It stays level
 with the story while the story scrolls past (`position: sticky`). That only
 works because `.canvas` uses `overflow: clip`; `overflow: hidden` on any
@@ -418,44 +423,48 @@ drop it in `assets_src/about/` and rerun the script.
 
 ## Navigation
 
-`Navbar.jsx`: the wordmark, five links, and Get Started.
+`Navbar.jsx`: the logo, the wordmark (TheHealthy*Stitch*), seven links, and
+Get Started.
 
-- **Home** goes to the top of the page, **Plans** to Why Healthystitch and
-  **Enquiry form** to the form. **Contact** opens the WhatsApp chat in a new
-  tab, the same chat as the floating button, and the **email address** opens
-  the visitor's email app. Get Started goes to the form too.
-- Below 960px the links fold behind a Menu button and open as a panel under
+- **Home** goes to the top of the page, **Plans** to the plans page
+  (`/plans`, `PlansPage.jsx`) and **Enquiry form** to the form. **Contact**
+  opens the WhatsApp chat in a new tab, the same chat as the floating button,
+  the **email address** opens the visitor's email app, and **Instagram** and
+  **Facebook** open the profiles. Get Started goes to the form too.
+- Below 1200px the links fold behind a Menu button and open as a panel under
   the bar. The panel is a disclosure, not a modal, so focus is not trapped.
   Opening it moves focus to the first link, because the links come before the
   button in the page and Tab would otherwise skip them. It closes on a link,
   on Escape (focus goes back to the button), on a click outside, when focus
-  leaves the nav, and when the screen widens past 960px.
+  leaves the nav, and when the screen widens past 1200px. Below 1200px the
+  logo, the wordmark and the seven links no longer fit side by side: at
+  1024px the wordmark ran into Home.
 - The fold point is written twice: `COMPACT` in `Navbar.jsx` and the
-  `max-width: 959px` query in `global.css`. Change them together.
+  `max-width: 1199px` query in `global.css`. Change them together.
   `tools/check_reviews.py` measures the bar from 320px to 1920px and fails if
   anything in it touches.
-- Below 360px Get Started is hidden: the wordmark, Get Started and the Menu
-  button do not fit side by side. The menu's Enquiry form goes to the same
-  place.
+- In the compact bar Get Started is hidden. The menu's Enquiry form goes to
+  the same place.
 
 ## The enquiry form
 
-`EnquirySection.jsx`, the last section before the footer. The site has no
-server, so the form sends nothing to it. **Send on WhatsApp** opens a chat
-with Mitali with the enquiry typed out. **Send by email** opens the visitor's
-email app with the same text and a subject line ("Nutrition plan enquiry
-from" and their name). The visitor presses send there, so the enquiry comes
-from their own number or address, and nothing is stored on the way.
+`EnquirySection.jsx`, the last section of the home page and of the plans
+page. **Send on WhatsApp** opens a chat with Mitali with the enquiry typed
+out, and the visitor presses send there.
 
-- Name, phone (10 to 15 digits) and "What would you like help with?" are
-  required. Email and the message are optional.
+- Name, phone (10 to 15 digits), primary health goal, dietary preference and
+  preferred consultation time are required. The programme and the message
+  are optional; choosing a programme on the plans page fills it in.
 - Errors appear after the first try to send and clear as each field is fixed.
   A failed send moves focus to the first field that needs fixing, and a screen
   reader reads each error with its field.
-- After a send, a status line says what should have happened, with a link to
-  try again if WhatsApp or the email app did not open.
-- The choices for "What would you like help with?" are `GOALS` at the top of
-  the component. Change them freely; the message carries the chosen text.
+- The goals are the 14 `HEALTH_CATEGORIES` in `src/data/plansData.js`.
+- `src/lib/enquiryStorage.js` also keeps a copy of each enquiry: in the
+  visitor's own browser (localStorage), and in `data/enquiries.json` through
+  `/api/enquiries`. That endpoint is middleware in `vite.config.js`, so it
+  exists only while `npm run dev` runs. The built site has no server, so
+  there the copy stays in the visitor's browser, and Ctrl+Shift+A
+  (`AdminEnquiryModal.jsx`) lists only the enquiries made in that browser.
 - The fields are 16px, so iPhones do not zoom the page in when one is
   focused.
 
@@ -508,13 +517,13 @@ python tools/check_console.py       # console / network errors
 python tools/check_wheel.py         # drives the wheel, shoots ring + drum states
 python tools/check_wheel_a11y.py    # keyboard, index jumps, scroll release, reduced motion
 python tools/probe_wheel.py         # stage/card/ring measurements per viewport
-python tools/check_reviews.py       # section order, the reviews strip, About, the nav and its Menu
+python tools/check_reviews.py       # section order, the reviews row, About, the results count, the nav
 python tools/check_align.py         # every band shares one left edge
 python tools/shot_seam.py           # the join between About and the results band
 python tools/_test_transformations.py  # the photo pipeline, on synthetic stand-ins
 ```
 
-`_test_transformations.py` runs the real pipeline over seven stand-ins shaped
+`_test_transformations.py` runs the real pipeline over six stand-ins shaped
 like the supplied photographs, with markers pinned to the extreme top and
 bottom of each. If the pipeline ever starts cropping instead of padding, the
 markers vanish and it fails. It works in a temporary directory and never
@@ -557,11 +566,11 @@ attribution, so they can stay as-is.
 - The apple is a cross-section of a Pink Lady rather than a whole green apple,
   for the same reason: the green-apple photographs on Commons are all shot on
   dark textured surfaces.
-- There is no plans or prices section, so the nav's Plans link goes to Why
-  Healthystitch. When one exists, point Plans (`#proof` in `Navbar.jsx`) at it.
-- The enquiry form cannot send by itself: it relies on the visitor having
-  WhatsApp or an email app set up. A form service would remove that step,
-  but enquiries would then be stored by a third party.
+- The enquiry form reaches Mitali only through WhatsApp: it relies on the
+  visitor having WhatsApp and pressing send. On the built site the saved copy
+  never leaves the visitor's browser (see The enquiry form). A form service
+  or a small server would deliver every enquiry, but the enquiries would then
+  be stored by that service.
 - **On a tablet the wheel still cannot be turned by swiping.** A swipe
   scrolls the page, so the list of names is the way to reach a photograph.
   To give tablets the swipe gallery as well, add `, (pointer: coarse)` to
@@ -571,3 +580,5 @@ attribution, so they can stay as-is.
   (asserted by `check_wheel_a11y.py`). It still means roughly 6300px of wheel
   delta to cross the section. `WHEEL_UNITS` is the dial if that proves too slow.
 - Titles are placeholders. See the consent note above before replacing them.
+#   T h e H e a l t h y S t i t c h  
+ 
