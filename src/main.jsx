@@ -11,6 +11,9 @@ import './styles/proof.css'
 import './styles/transformations.css'
 import './styles/reviews.css'
 import './styles/about.css'
+import './styles/plans.css'
+import './styles/programmes.css'
+import './styles/admin.css'
 import './styles/enquiry.css'
 // The floating button. Defines --fab-size and --fab-gap, which footer.css
 // also uses to keep the end of the footer clear of the button.

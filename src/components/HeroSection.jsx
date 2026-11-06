@@ -14,16 +14,16 @@ export default function HeroSection() {
             column strands the "a" at the end of the first line. The space
             between the spans keeps the words apart for a screen reader. */}
         <h1 className="hero__headline">
-          <span className="hero__line">Stitch by stitch,</span>{' '}
+          <span className="hero__line">Stitch by Stitch,</span>{' '}
           <span className="hero__line">
-            a healthier <em>you</em>.
+            A Healthier <em>You</em>.
           </span>
         </h1>
 
         <div className="hero__rule">
-          <span className="hero__rule-label">Goals.</span>
+          <span className="hero__rule-label">Health.</span>
           <span className="hero__rule-line" aria-hidden="true" />
-          <span className="hero__rule-label">Health</span>
+          <span className="hero__rule-label">Goals</span>
         </div>
 
         <LifestyleSlides />

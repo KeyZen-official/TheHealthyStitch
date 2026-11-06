@@ -77,7 +77,7 @@ export default function LifestyleSlides() {
       className="slides"
       role="group"
       aria-roledescription="slideshow"
-      aria-label="Life on a Healthystitch plan"
+      aria-label="Life on a plan from TheHealthyStitch"
     >
       <OrganicMaskDefs />
 
@@ -111,7 +111,7 @@ export default function LifestyleSlides() {
 
       <div className="slides__meta">
         <p className="slides__caption">
-          <span className="slides__index">({pad(active + 1)})</span>
+          <span className="slides__index">{pad(active + 1)} —</span>
           {LIFESTYLE_SLIDES[active].caption}
         </p>
 
@@ -124,7 +124,7 @@ export default function LifestyleSlides() {
               onClick={() => advance(index)}
               onFocus={park}
               onBlur={release}
-              aria-label={slide.caption}
+              aria-label={`${pad(index + 1)} — ${slide.caption}`}
               aria-current={index === active}
             >
               <span className="slides__stitch-bar" aria-hidden="true" />

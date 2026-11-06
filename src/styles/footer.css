@@ -146,6 +146,21 @@
   border-top: 1px dashed rgba(245, 245, 241, 0.2);
 }
 
+.site-footer__brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.site-footer__logo-img {
+  width: clamp(54px, 4.4vw, 66px);
+  height: clamp(54px, 4.4vw, 66px);
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+  flex-shrink: 0;
+  transition: transform 260ms ease, filter 260ms ease;
+}
+
 .site-footer__wordmark {
   margin: 0;
   font-family: var(--font-display);

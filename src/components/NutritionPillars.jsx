@@ -1,74 +1,108 @@
 const ICON_PROPS = {
-  viewBox: '0 0 24 24',
+  viewBox: '0 0 32 32',
   fill: 'none',
   stroke: 'currentColor',
-  strokeWidth: 1,
+  strokeWidth: 1.6,
   strokeLinecap: 'round',
   strokeLinejoin: 'round',
   'aria-hidden': true,
   focusable: false,
 }
 
-const GoodFatsIcon = () => (
+/** 1. Eating less crap / junk food (drink cup & fast food crossed out) */
+const JunkFoodIcon = () => (
   <svg {...ICON_PROPS}>
-    <path d="M12 3.5c3.6 2.6 5.6 5.3 5.6 8.3A5.6 5.6 0 0 1 12 17.4a5.6 5.6 0 0 1-5.6-5.6c0-3 2-5.7 5.6-8.3Z" />
-    <path d="M9.6 12.3a2.4 2.4 0 0 0 2.4 2.4" />
+    <path d="M17 11h10l-1.3 14a1.8 1.8 0 0 1-1.8 1.6h-3.8a1.8 1.8 0 0 1-1.8-1.6L17 11z" />
+    <path d="M19 11l2-5h3" />
+    <path d="M5 15h9l-1 10.5a1.8 1.8 0 0 1-1.8 1.5H7.8a1.8 1.8 0 0 1-1.8-1.5L5 15z" />
+    <path d="M7 15v-5" />
+    <path d="M9.5 15V8" />
+    <path d="M12 15v-5" />
+    <line x1="3" y1="7" x2="29" y2="27" strokeWidth="1.8" />
   </svg>
 )
 
-const LeafyGreensIcon = () => (
+/** 2. Vegetarian / Jain plate (wholesome plant protein & veggies replacing steak) */
+const VeggiePlateIcon = () => (
   <svg {...ICON_PROPS}>
-    <path d="M5 19c0-6.6 4.6-12 14-12 0 7.7-5 12-10 12H5Z" />
-    <path d="M5 19C8 14.6 11.6 11.6 16 9.8" />
+    <ellipse cx="16" cy="18" rx="13" ry="8" />
+    <ellipse cx="16" cy="18" rx="8" ry="4.5" />
+    <path d="M16 13.5c-2.5-4-1-7 2-7.5 1.5 2 1.5 4.5 0 6.5" />
+    <path d="M16.5 8.5c1 1 2 2.5 1.5 4" />
   </svg>
 )
 
-const PlantProteinIcon = () => (
+/** 3. Lifting weights & walking (dumbbell) */
+const DumbbellIcon = () => (
   <svg {...ICON_PROPS}>
-    <path d="M12 21V10" />
-    <path d="M12 10C12 6 9.2 3.4 5 3c-.4 4.2 2.2 7 7 7Z" />
-    <path d="M12 13c0-3.3 2.3-5.6 6-6 .3 3.6-2 6-6 6Z" />
+    <line x1="9" y1="16" x2="23" y2="16" strokeWidth="2.4" />
+    <rect x="7" y="10" width="3" height="12" rx="1.5" />
+    <rect x="3" y="12" width="3" height="8" rx="1" />
+    <rect x="22" y="10" width="3" height="12" rx="1.5" />
+    <rect x="26" y="12" width="3" height="8" rx="1" />
   </svg>
 )
 
-const DrinkWaterIcon = () => (
+/** 4. Good night's sleep (crescent moon with zzz) */
+const SleepIcon = () => (
   <svg {...ICON_PROPS}>
-    <path d="M6.5 4h11l-1.1 15.1a1.6 1.6 0 0 1-1.6 1.4H9.2a1.6 1.6 0 0 1-1.6-1.4L6.5 4Z" />
-    <path d="M7 10.5c2 1.3 3.4 1.3 5 0s3-1.3 4.6 0" />
+    <path d="M19 6a11 11 0 1 0 7 15 10 10 0 0 1-7-15z" />
+    <path d="M21 7h4l-4 4h4" strokeWidth="1.2" />
+    <path d="M25 3h3l-3 3h3" strokeWidth="1" />
   </svg>
 )
 
-const PILLARS = [
-  { id: '01', name: 'Good Fats', Icon: GoodFatsIcon },
-  { id: '02', name: 'Leafy Greens', Icon: LeafyGreensIcon },
-  { id: '03', name: 'Plant Protein', Icon: PlantProteinIcon },
-  { id: '04', name: 'Drink Water', Icon: DrinkWaterIcon },
+const HABITS = [
+  {
+    id: 'junk',
+    Icon: JunkFoodIcon,
+    question: 'Eating less crap?',
+  },
+  {
+    id: 'veggie',
+    Icon: VeggiePlateIcon,
+    question: 'Having wholesome dal, paneer and veggies?',
+  },
+  {
+    id: 'weights',
+    Icon: DumbbellIcon,
+    question: 'Lifting weights and going for walks?',
+  },
+  {
+    id: 'sleep',
+    Icon: SleepIcon,
+    question: 'Getting a good night’s sleep?',
+  },
 ]
 
 export default function NutritionPillars() {
   return (
-    <section className="pillars">
-      <div className="pillars__intro">
-        <h2 className="pillars__title">
-          Our 4 Pillars <em>Of</em> Nutrition
+    <section className="pillars basics-card" aria-labelledby="basics-heading">
+      <header className="basics-card__head">
+        <h2 className="basics-card__title" id="basics-heading">
+          Everyone is obsessed with tracking their health data.
         </h2>
-        <p className="pillars__copy">
-          Framework designed to fulfil your body&rsquo;s core nutritional needs
-          while fueling positive long-term health.
+        <p className="basics-card__subtitle">
+          But have you tried&hellip;
         </p>
+      </header>
+
+      <div className="basics-card__grid">
+        {HABITS.map(({ id, Icon, question }) => (
+          <div className="basics-card__col" key={id}>
+            <div className="basics-card__icon">
+              <Icon />
+            </div>
+            <p className="basics-card__question">{question}</p>
+          </div>
+        ))}
       </div>
 
-      <ul className="pillars__list">
-        {PILLARS.map(({ id, name, Icon }) => (
-          <li className="pillars__row" key={id}>
-            <span className="pillars__num">({id})</span>
-            <span className="pillars__name">{name}</span>
-            <span className="pillars__icon">
-              <Icon />
-            </span>
-          </li>
-        ))}
-      </ul>
+      <footer className="basics-card__foot">
+        <p className="basics-card__punchline">
+          Master the basics before obsessing over the data.
+        </p>
+      </footer>
     </section>
   )
 }

@@ -63,7 +63,7 @@ def main():
         page.wait_for_timeout(900)
         jumped = front(page)
         print(f"click last index entry -> {jumped}")
-        if jumped != "Diploma in Nutrition":
+        if jumped != "Transformation No. 06":
             fails.append(f"index jump landed on {jumped}, expected the last item")
 
         # ---------- the page is not trapped ----------

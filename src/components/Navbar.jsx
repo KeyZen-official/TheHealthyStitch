@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Mail, Menu, X } from 'lucide-react'
-import { WhatsAppIcon } from './icons/BrandIcons.jsx'
+import { WhatsAppIcon, InstagramIcon, FacebookIcon } from './icons/BrandIcons.jsx'
 import { CONTACT, emailHref, whatsappHref } from '../contact.js'
 
 /**
@@ -8,7 +8,7 @@ import { CONTACT, emailHref, whatsappHref } from '../contact.js'
  * so they fold into a Menu button. Keep in step with the matching media query
  * in global.css.
  */
-const COMPACT = '(max-width: 959px)'
+const COMPACT = '(max-width: 1199px)'
 
 /**
  * The site navigation.
@@ -21,10 +21,24 @@ const COMPACT = '(max-width: 959px)'
  * button), on a click or focus outside the nav, and when the screen widens
  * past COMPACT.
  */
-export default function Navbar() {
+export default function Navbar({ currentPage = 'home', onNavigate }) {
   const [open, setOpen] = useState(false)
   const navRef = useRef(null)
   const toggleRef = useRef(null)
+
+  const handleLinkClick = (page, hash = '') => (event) => {
+    event.preventDefault()
+    setOpen(false)
+    if (onNavigate) {
+      onNavigate(page, hash)
+    } else {
+      if (page === 'plans') {
+        window.location.pathname = '/plans'
+      } else {
+        window.location.href = hash || '/'
+      }
+    }
+  }
 
   useEffect(() => {
     if (!open) return undefined
@@ -72,11 +86,23 @@ export default function Navbar() {
 
   return (
     <nav className={`nav${open ? ' is-open' : ''}`} aria-label="Main" ref={navRef}>
-      {/* The name is the mark: no separate logo. "stitch" carries the brand's
-          stitched underline, the same one the section headlines use. */}
-      <a className="nav__brand" href="#top" aria-label="Healthystitch, back to top" onClick={close}>
+      {/* The logo, then the name. "Stitch" carries the brand's stitched
+          underline, the same one the section headlines use. */}
+      <a
+        className="nav__brand"
+        href="/"
+        aria-label="TheHealthyStitch, back to top"
+        onClick={handleLinkClick('home', '#top')}
+      >
+        <img
+          src="/assets/logo.png"
+          alt="TheHealthyStitch logo"
+          className="nav__logo-img"
+          width="58"
+          height="58"
+        />
         <span className="nav__name" aria-hidden="true">
-          Healthy<em>stitch</em>
+          TheHealthy<em>Stitch</em>
         </span>
       </a>
 
@@ -84,20 +110,26 @@ export default function Navbar() {
           directly, which leave the page. */}
       <ul className="nav__links" id="nav-links">
         <li>
-          <a href="#top" onClick={close}>
+          <a
+            href="/"
+            className={currentPage === 'home' ? 'is-active' : ''}
+            onClick={handleLinkClick('home', '#top')}
+          >
             Home
           </a>
         </li>
         <li>
-          {/* There is no list of plans or prices yet. "Why Healthystitch"
-              is the section that describes what a plan is. */}
-          <a href="#proof" onClick={close}>
+          <a
+            href="/plans"
+            className={currentPage === 'plans' ? 'is-active' : ''}
+            onClick={handleLinkClick('plans', '')}
+          >
             Plans
           </a>
         </li>
         <li>
-          <a href="#enquiry" onClick={close}>
-            Enquiry form
+          <a href="#enquiry" onClick={handleLinkClick(currentPage, '#enquiry')}>
+            Enquiry Form
           </a>
         </li>
         <li>
@@ -115,10 +147,39 @@ export default function Navbar() {
             {CONTACT.email}
           </a>
         </li>
+        <li>
+          <a
+            href={CONTACT.social.find((s) => s.id === 'instagram')?.href || 'https://www.instagram.com/the_healthy_stitch?dlrf=YmxzMG01cGZwZjB5'}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={close}
+            aria-label="Instagram (opens in a new tab)"
+            title="Instagram"
+            className="nav__social-link"
+          >
+
+            <InstagramIcon className="nav__link-icon nav__link-icon--social" />
+            <span className="nav__social-text">Instagram</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href={CONTACT.social.find((s) => s.id === 'facebook')?.href || 'https://www.facebook.com/share/1F9pFvkeCP/?mibextid=wwXIfr'}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={close}
+            aria-label="Facebook (opens in a new tab)"
+            title="Facebook"
+            className="nav__social-link"
+          >
+            <FacebookIcon className="nav__link-icon nav__link-icon--social" />
+            <span className="nav__social-text">Facebook</span>
+          </a>
+        </li>
       </ul>
 
       <div className="nav__end">
-        <a className="nav__cta" href="#enquiry" onClick={close}>
+        <a className="nav__cta" href="#enquiry" onClick={handleLinkClick(currentPage, '#enquiry')}>
           Get Started <span aria-hidden="true">&#8594;</span>
         </a>
 

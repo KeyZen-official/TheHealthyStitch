@@ -4,11 +4,12 @@ import { CONTACT, emailHref, whatsappHref } from '../contact.js'
 
 /** Every section the page has, in page order. */
 const EXPLORE = [
-  { label: 'About us', href: '#about' },
-  { label: 'Client results', href: '#transformations' },
+  { label: 'About Us', href: '#about' },
+  { label: 'Nutrition Plans', href: '#plans' },
+  { label: 'Client Results', href: '#transformations' },
   { label: 'Reviews', href: '#reviews' },
-  { label: 'Why us', href: '#proof' },
-  { label: 'Enquiry form', href: '#enquiry' },
+  { label: 'Why Us', href: '#proof' },
+  { label: 'Enquiry Form', href: '#enquiry' },
 ]
 
 /** Read out after links that open somewhere else, so nobody is surprised. */
@@ -22,22 +23,33 @@ const NEW_TAB = <span className="u-sr"> (opens in a new tab)</span>
  * band is the results section's `theme-dark-olive`, so the page closes on the
  * same ground as its darkest section.
  */
-export default function SiteFooter() {
+export default function SiteFooter({ onOpenAdmin, onNavigate }) {
   const year = new Date().getFullYear()
+
+  const handleExploreClick = (href) => (e) => {
+    e.preventDefault()
+    if (href === '#plans') {
+      if (onNavigate) onNavigate('plans')
+      else window.location.pathname = '/plans'
+    } else {
+      if (onNavigate) onNavigate('home', href)
+      else window.location.href = '/' + href
+    }
+  }
 
   return (
     <footer className="site-footer theme-dark-olive" id="contact">
       <div className="site-footer__inner">
         <section className="site-footer__cta" aria-labelledby="footer-cta-title">
           <p className="site-footer__eyebrow">
-            <span>Get in touch</span>
+            <span>Get In Touch</span>
             <span className="site-footer__rule" aria-hidden="true" />
           </p>
 
           <div className="site-footer__cta-row">
             <div>
               <h2 className="site-footer__headline" id="footer-cta-title">
-                Ready when you <em>are</em>
+                When You Are <em>Ready</em>
               </h2>
               <p className="site-footer__lead">
                 Questions about a plan, or ready to begin? Message Mitali on
@@ -66,9 +78,18 @@ export default function SiteFooter() {
 
         <div className="site-footer__grid">
           <div className="site-footer__brand">
-            <p className="site-footer__wordmark">
-              Healthy<em>stitch</em>
-            </p>
+            <div className="site-footer__brand-lockup">
+              <img
+                src="/assets/logo.png"
+                alt="TheHealthyStitch logo"
+                className="site-footer__logo-img"
+                width="60"
+                height="60"
+              />
+              <p className="site-footer__wordmark">
+                TheHealthy<em>Stitch</em>
+              </p>
+            </div>
             {/* Mitali's own closing line, from her story. */}
             <p className="site-footer__motto">A lifestyle, not a temporary goal.</p>
           </div>
@@ -80,7 +101,9 @@ export default function SiteFooter() {
             <ul className="site-footer__list">
               {EXPLORE.map(({ label, href }) => (
                 <li key={href}>
-                  <a href={href}>{label}</a>
+                  <a href={href} onClick={handleExploreClick(href)}>
+                    {label}
+                  </a>
                 </li>
               ))}
             </ul>
@@ -144,21 +167,8 @@ export default function SiteFooter() {
 
         <div className="site-footer__bottom">
           <p>
-            &copy; {year} The Healthy Stitch. Nutrition guidance, not medical
+            &copy; {year} TheHealthyStitch. Nutrition guidance, not medical
             advice.
-          </p>
-          {/* CC BY 2.0 requires a visible credit for the hero slideshow's
-              photographs. See public/assets/ATTRIBUTION.md. */}
-          <p className="site-footer__credit">
-            Lifestyle photographs: Shixart1985 / Wikimedia Commons,{' '}
-            <a
-              href="https://creativecommons.org/licenses/by/2.0/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              CC BY 2.0
-              {NEW_TAB}
-            </a>
           </p>
           <a className="site-footer__top" href="#top">
             Back to top

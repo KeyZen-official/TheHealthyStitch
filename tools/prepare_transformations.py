@@ -28,7 +28,7 @@ Usage
     # write clearly-marked stand-ins so the page renders before the photos land
     python tools/prepare_transformations.py --placeholders
 
-Files are matched to slots by sorted filename, so name the originals 01..07 (or
+Files are matched to slots by sorted filename, so name the originals 01..06 (or
 anything that sorts the way you want them to appear) and the order follows.
 """
 
@@ -62,7 +62,6 @@ SLOTS = [
     "transformation-04",
     "transformation-05",
     "transformation-06",
-    "credential",
 ]
 
 SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".bmp", ".tif", ".tiff"}
@@ -200,7 +199,7 @@ def main() -> int:
 
     if len(sources) != len(SLOTS):
         print(f"Warning: {len(sources)} photograph(s) for {len(SLOTS)} slots.")
-        print("src/assets.js lists seven; trim TRANSFORMATIONS or add the missing files.\n")
+        print("src/assets.js lists six; trim TRANSFORMATIONS or add the missing files.\n")
 
     written = 0
     for source, slot in zip(sources, SLOTS):

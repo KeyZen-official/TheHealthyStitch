@@ -12,16 +12,12 @@ export default function NutritionVisual() {
       <img
         className="visual__capsule"
         src={CAPSULE_IMAGE}
-        alt="Open nutrition capsule surrounded by fresh vegetables, fruit and herbs"
+        alt="Open nutrition capsule surrounded by fresh vegetables, fruit and herbs — Vegetarian Plans That Survive a Blood Test"
         width="1600"
         height="1600"
         loading="eager"
         decoding="async"
       />
-
-      <figcaption className="visual__tagline">
-        Vegetarian Plans That Survive A Blood Test
-      </figcaption>
     </figure>
   )
 }

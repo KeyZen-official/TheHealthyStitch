@@ -1,0 +1,40 @@
+[
+  {
+    "id": "enq_1793874406393_y9cvw",
+    "submittedAt": "2026-11-05T10:26:46.393Z",
+    "name": "Mitali Shah",
+    "phone": "8879293255",
+    "email": "",
+    "programme": "The Consistency Programme (3 Months)",
+    "goal": "Fat Loss / Weight Loss",
+    "diet": "Jain",
+    "consultationTime": "Afternoon (12 PM – 4 PM)",
+    "message": "",
+    "channel": "whatsapp"
+  },
+  {
+    "id": "enq_1793690076545_3yahm",
+    "submittedAt": "2026-11-03T07:14:36.544Z",
+    "name": "qw",
+    "phone": "9898989898",
+    "email": "",
+    "programme": "The Lifestyle Transformation Programme (6 Months)",
+    "goal": "Weight Loss / Weight Gain",
+    "diet": "Vegetarian",
+    "consultationTime": "Afternoon (12 PM – 4 PM)",
+    "message": "hello",
+    "channel": "whatsapp"
+  },
+  {
+    "id": "test_enq_1793686556971",
+    "submittedAt": "2026-11-03T06:15:56.971Z",
+    "name": "Rohan Mehta",
+    "phone": "+91 98200 99999",
+    "email": "rohan.mehta@example.com",
+    "goal": "Hypertension Management (Blood Pressure)",
+    "diet": "Vegetarian",
+    "consultationTime": "Morning (8 AM – 12 PM)",
+    "message": "Looking to balance dietary sodium with mineral-rich home meals.",
+    "channel": "whatsapp"
+  }
+]

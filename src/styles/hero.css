@@ -142,20 +142,16 @@
 .slides {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 0 auto;
   margin-top: 20px;
 }
 
-/* Every photograph inside this frame is absolutely positioned, which is what
-   keeps the frame's height out of its own content's height. Sizing it from
-   in-flow children makes the row height and the frame height depend on each
-   other, and Chrome resolves that by growing the hero past the fold on
-   768px-tall laptops. */
+/* Restored to generous, full-sized editorial proportions matching the original design */
 .slides__frame {
   position: relative;
-  flex: 1 1 auto;
-  min-height: 170px;
+  width: 100%;
+  aspect-ratio: 2.15 / 1;
+  min-height: clamp(280px, 32vh, 380px);
   clip-path: url(#organic-mask);
   overflow: hidden;
   background: var(--letters);
@@ -254,66 +250,100 @@
   background: var(--olive-ink);
 }
 
-/* ---------- Nutrition pillars ---------- */
+/* ---------- Nutrition pillars / Basics before data ---------- */
 
-.pillars {
-  display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
-  gap: 44px;
+.pillars.basics-card {
+  display: flex;
+  flex-direction: column;
   margin-top: 24px;
+  padding: clamp(20px, 2.2vw, 30px);
+  background: #fbfbf8;
+  border: 1px solid rgba(56, 56, 50, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px -15px rgba(34, 35, 31, 0.08);
   flex: 0 0 auto;
 }
 
-.pillars__title {
-  margin: 0 0 9px;
+.basics-card__head {
+  margin-bottom: 20px;
+}
+
+.basics-card__title {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 550;
+  line-height: 1.18;
+  letter-spacing: -0.015em;
+  color: var(--text);
+}
+
+.basics-card__subtitle {
+  margin: 0;
   font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 400;
-  font-size: 24px;
-  line-height: 1.18;
-  color: var(--text);
+  font-size: clamp(19px, 1.8vw, 25px);
+  font-weight: 450;
+  color: #a46d24; /* Warm ochre accent from reference */
 }
 
-.pillars__copy {
-  margin: 0;
-  max-width: 38ch;
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.6;
-  color: var(--text-soft);
-}
-
-.pillars__row {
+.basics-card__grid {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 6px 0 20px;
+}
+
+.basics-card__col {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 11px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(56, 56, 50, 0.32);
+  text-align: center;
+  padding: 0 10px;
+  border-right: 1px solid rgba(56, 56, 50, 0.14);
 }
 
-.pillars__num {
+.basics-card__col:last-child {
+  border-right: none;
+}
+
+.basics-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.basics-card__icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.basics-card__question {
+  margin: 0;
   font-family: var(--font-sans);
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--text-soft);
-}
-
-.pillars__name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
+  line-height: 1.35;
   color: var(--text);
 }
 
-.pillars__icon {
-  display: inline-flex;
-  color: var(--text);
+.basics-card__foot {
+  padding-top: 16px;
+  border-top: 1px dashed var(--hairline);
 }
 
-.pillars__icon svg {
-  width: 16px;
-  height: 16px;
+.basics-card__punchline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(17px, 1.7vw, 22px);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  color: var(--text);
 }
 
 /* ============================================================
@@ -332,23 +362,12 @@
   }
 
   .slides__frame {
-    min-height: 140px;
+    aspect-ratio: 2.15 / 1;
+    min-height: 270px;
   }
 
   .slides__meta {
     margin-top: 9px;
-  }
-
-  .pillars {
-    margin-top: 18px;
-  }
-
-  .pillars__title {
-    font-size: 20px;
-  }
-
-  .pillars__row {
-    padding: 6px 0;
   }
 }
 
@@ -382,20 +401,21 @@
   }
 
   .slides__frame {
-    min-height: 170px;
+    aspect-ratio: 2.1 / 1;
+    min-height: 250px;
   }
 
   .slides__caption {
     font-size: 13px;
   }
 
-  .pillars {
-    grid-template-columns: 1fr;
-    gap: 18px;
+  .basics-card__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 20px;
   }
 
-  .pillars__copy {
-    max-width: none;
+  .basics-card__col:nth-child(2) {
+    border-right: none;
   }
 }
 
@@ -447,20 +467,39 @@
   .slides__frame {
     flex: 0 0 auto;
     aspect-ratio: 4 / 3;
-    min-height: 0;
+    min-height: 240px;
   }
 
-  .pillars {
-    margin-top: 26px;
-    gap: 20px;
+  .pillars.basics-card {
+    margin-top: 24px;
+    padding: 20px 16px;
   }
 
-  .pillars__title {
-    font-size: 21px;
+  .basics-card__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 18px;
   }
 
-  .pillars__row {
-    padding: 10px 0;
+  .basics-card__col:nth-child(2) {
+    border-right: none;
+  }
+}
+
+@media (max-width: 440px) {
+  .basics-card__grid {
+    grid-template-columns: 1fr;
+    row-gap: 14px;
+  }
+
+  .basics-card__col {
+    border-right: none;
+    border-bottom: 1px dashed var(--hairline);
+    padding-bottom: 12px;
+  }
+
+  .basics-card__col:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
   }
 }
 

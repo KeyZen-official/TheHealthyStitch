@@ -8,8 +8,10 @@
   --panel-left: #edeee8;
   --panel-right: #f7f7f4;
   --panel-proof: #eff1e9;
-  --headline: #69851f; /* 3.9:1 on the canvas — display sizes only */
-  --olive-ink: #3f5213; /* 7.6:1 — the olive that small type can use */
+  --headline: #69851f;
+  /* 3.9:1 on the canvas — display sizes only */
+  --olive-ink: #3f5213;
+  /* 7.6:1 — the olive that small type can use */
   --letters: #d6ddc8;
   --text: #22231f;
   --text-soft: #66665e;
@@ -26,7 +28,7 @@
   --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
 
-  --nav-h: 68px;
+  --nav-h: 72px;
 
   /* One horizontal inset for the whole page. The nav, the hero's editorial
      column and the proof section all hang off this, so everything lines up on
@@ -157,7 +159,23 @@ button {
 .nav__brand {
   display: inline-flex;
   align-items: center;
+  gap: 12px;
   justify-self: start;
+  text-decoration: none;
+}
+
+.nav__logo-img {
+  width: clamp(52px, 4.3vw, 62px);
+  height: clamp(52px, 4.3vw, 62px);
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 7px rgba(34, 35, 31, 0.14));
+  transition: transform 260ms ease, filter 260ms ease;
+}
+
+.nav__brand:hover .nav__logo-img {
+  transform: scale(1.07);
+  filter: drop-shadow(0 4px 14px rgba(105, 133, 31, 0.3));
 }
 
 /* The wordmark. It replaced a 14px diamond logo and a 12.5px uppercase label,
@@ -194,7 +212,7 @@ button {
 .nav__links {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: clamp(14px, 1.4vw, 22px);
   justify-content: center;
 }
 
@@ -228,6 +246,19 @@ button {
   color: var(--olive-ink);
 }
 
+.nav__link-icon--social {
+  color: var(--text);
+  transition: color 160ms ease;
+}
+
+.nav__social-link:hover .nav__link-icon--social {
+  color: var(--headline);
+}
+
+.nav__social-text {
+  display: none;
+}
+
 .nav__links a:hover,
 .nav__cta:hover {
   opacity: 0.6;
@@ -254,26 +285,38 @@ button {
 /* Shown only on compact screens, below. */
 .nav__toggle {
   display: none;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid rgba(56, 56, 50, 0.3);
-  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(56, 56, 50, 0.22);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(34, 35, 31, 0.08);
   cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
 }
 
 .nav__toggle:hover {
-  background: rgba(56, 56, 50, 0.06);
+  background: #f4f4ee;
+  border-color: rgba(56, 56, 50, 0.38);
+}
+
+.nav__toggle:active {
+  transform: scale(0.96);
 }
 
 .nav__toggle-icon {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 /* ---------- Responsive navigation ---------- */
 
-/* Five links and a long email address: tighter before they have to fold. */
+/* Seven links and a long email address: tighter before they have to fold. */
 @media (max-width: 1279px) {
   .nav__links {
     gap: 22px;
@@ -287,19 +330,70 @@ button {
 
 @media (max-width: 900px) {
   :root {
-    --nav-h: 60px;
+    --nav-h: 64px;
   }
 }
 
 /* Compact: the links fold into the Menu button and open as a panel under
-   the bar. Keep the width in step with COMPACT in Navbar.jsx. */
-@media (max-width: 959px) {
+   the bar. From 1200px the logo, the wordmark and the seven links fit side
+   by side; below that the wordmark ran into Home. Keep the width in step
+   with COMPACT in Navbar.jsx. */
+@media (max-width: 1199px) {
   .nav {
-    grid-template-columns: 1fr auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 clamp(16px, 4vw, 24px);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .nav__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .nav__logo-img {
+    width: clamp(48px, 5.2vw, 54px);
+    height: clamp(48px, 5.2vw, 54px);
+  }
+
+  .nav__name {
+    font-size: clamp(19px, 4.6vw, 24px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* The stitched underline hangs below the line box, so the clip above
+       would cut it off. The padding makes room for it inside the clip; the
+       negative margin hands that room back, so nothing moves. */
+    padding-bottom: 0.34em;
+    margin-bottom: -0.34em;
+  }
+
+  .nav__end {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    margin-left: 12px;
+  }
+
+  /* "Get Started" completely removed on mobile responsive */
+  .nav__cta {
+    display: none !important;
   }
 
   .nav__toggle {
-    display: inline-grid;
+    display: inline-flex;
+  }
+
+  .nav.is-open .nav__toggle {
+    background: var(--text);
+    color: #ffffff;
+    border-color: var(--text);
   }
 
   .nav__links {
@@ -310,7 +404,7 @@ button {
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    padding: 4px var(--gutter) 18px;
+    padding: 6px clamp(16px, 4vw, 24px) 20px;
     background: var(--canvas);
     border-bottom: 1px solid var(--rule);
     box-shadow: 0 26px 40px -30px rgba(34, 35, 31, 0.5);
@@ -355,17 +449,14 @@ button {
     width: 19px;
     height: 19px;
   }
-}
 
-/* The smallest phones fit the wordmark and the Menu button, not Get Started
-   as well. It goes: the menu's Enquiry form is the same place. */
-@media (max-width: 359px) {
-  .nav__cta {
-    display: none;
+  .nav__social-text {
+    display: inline;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .nav__links,
   .nav.is-open .nav__links {
     transform: none;

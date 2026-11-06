@@ -1,20 +1,16 @@
 /* ============================================================
    HEALTHYSTITCH — client reviews
-   WhatsApp messages from clients, as chat cards on a strip that runs
-   sideways in a loop. Directly after the results band.
+   WhatsApp messages from clients, as chat cards in a row the visitor slides
+   sideways. Nothing moves on its own. Directly after the results band.
    ============================================================ */
 
 /* Same section pattern as .proof and .shift: padding on the section, a
    measure on the children, so the eyebrow and headline share their left
-   edge. The strip is the exception and runs full bleed. */
+   edge. The row is the exception and runs full bleed. */
 .reviews {
   --measure: 1320px;
   --review-w: 340px;
   --review-gap: 22px;
-  /* One full lap of the strip. At 340px cards that is about 31px a second:
-     slow enough to read a line as it passes, and hover or Pause stops it. */
-  --reviews-lap: 58s;
-  --reviews-fade: clamp(24px, 6vw, 110px);
 
   padding: clamp(54px, 6.6vw, 104px) var(--gutter) clamp(40px, 4.4vw, 70px);
   background: var(--canvas);
@@ -63,14 +59,14 @@
   background: var(--rule);
 }
 
-/* The Pause button comes last in the source (it is read just before the strip
-   it controls) but sits beside the headline on wide screens. */
+/* The arrows come last in the source (they are read just before the row
+   they move) but sit beside the headline on wide screens. */
 .reviews__head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas:
     'eyebrow eyebrow'
-    'headline toggle'
+    'headline arrows'
     'standfirst standfirst';
   column-gap: 24px;
   align-items: end;
@@ -88,8 +84,8 @@
   grid-area: standfirst;
 }
 
-.reviews__toggle {
-  grid-area: toggle;
+.reviews__arrows {
+  grid-area: arrows;
   justify-self: end;
 }
 
@@ -124,99 +120,112 @@
   color: var(--text-soft);
 }
 
-.reviews__toggle {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 8px;
+.reviews__arrows {
+  display: flex;
+  gap: 10px;
   margin-bottom: 0.4em;
-  padding: 9px 17px 9px 14px;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: background-color 200ms ease, color 200ms ease;
 }
 
-.reviews__toggle:hover {
+/* 44px: a comfortable thumb target. */
+.reviews__arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color 200ms ease, color 200ms ease, opacity 200ms ease;
+}
+
+.reviews__arrow svg {
+  width: 19px;
+  height: 19px;
+}
+
+.reviews__arrow:hover {
   background: var(--text);
   color: var(--canvas);
 }
 
-.reviews__toggle-icon {
-  width: 15px;
-  height: 15px;
+.reviews__arrow[aria-disabled='true'] {
+  opacity: 0.3;
+  cursor: default;
 }
 
-/* ---------- The strip ---------- */
+.reviews__arrow[aria-disabled='true']:hover {
+  background: none;
+  color: var(--text);
+}
 
-/* Full bleed: the negative margin cancels the section's own padding, so cards
-   come in from the right edge of the screen and leave by the left one. The
-   vertical padding is room for the cards' shadows, which the overflow would
-   otherwise cut flat. */
+/* ---------- The row ---------- */
+
+/* Full bleed: the negative margin cancels the section's own padding, so the
+   row runs to both edges of the screen and a card slides off the edge rather
+   than vanishing at the gutter. The snap points are inset by the gutter
+   again, so a card at rest lines up with the headline. The vertical padding
+   is room for the cards' shadows, which the scroller would otherwise cut. */
 .reviews__viewport {
   margin: clamp(26px, 3vw, 44px) calc(var(--gutter) * -1) 0;
   padding: 8px 0 36px;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(
-    90deg,
-    transparent 0,
-    #000 var(--reviews-fade),
-    #000 calc(100% - var(--reviews-fade)),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    90deg,
-    transparent 0,
-    #000 var(--reviews-fade),
-    #000 calc(100% - var(--reviews-fade)),
-    transparent 100%
-  );
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+
+.reviews__viewport::-webkit-scrollbar {
+  display: none;
 }
 
 .reviews__viewport:focus-visible {
   outline-offset: -3px;
 }
 
-.reviews__track {
-  display: flex;
-  width: max-content;
-  animation: reviews-run var(--reviews-lap) linear infinite;
+/* A mouse drags the row (useDragScroll.js). */
+@media (hover: hover) and (pointer: fine) {
+  .reviews__viewport.is-scrollable {
+    cursor: grab;
+  }
 }
 
-/* Each list carries its own trailing gap, so the two together are exactly
-   twice one list and sliding by -50% lands the copy precisely where the
-   original started. */
-.reviews__set {
+.reviews__viewport.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* Snapping is off while the mouse drags the row and until it has landed:
+   a snapping row fights the pointer. */
+.reviews__viewport.is-dragging,
+.reviews__viewport.is-settling {
+  scroll-snap-type: none;
+}
+
+/* The side padding is on the list, not the scroller: a scroller's own end
+   padding is not reliably part of what it scrolls. Positioned, because the
+   arrows and the drag measure the cards' offsetLeft from here. Stretched, so
+   every card is as tall as the longest review. */
+.reviews__list {
+  position: relative;
   display: flex;
   align-items: stretch;
   gap: var(--review-gap);
-  padding-right: var(--review-gap);
-}
-
-/* Starts one gutter in, so the first card is not born inside the edge fade. */
-@keyframes reviews-run {
-  from {
-    transform: translateX(var(--gutter));
-  }
-  to {
-    transform: translateX(calc(var(--gutter) - 50%));
-  }
-}
-
-.reviews__viewport:hover .reviews__track,
-.reviews__viewport:focus-within .reviews__track,
-.reviews.is-paused .reviews__track {
-  animation-play-state: paused;
+  width: max-content;
+  padding: 0 var(--gutter);
 }
 
 /* ---------- One chat card ---------- */
 
+/* snap-stop: a swipe moves on by one review, however hard the flick, so
+   nobody skips a client's message by accident. */
 .review {
   display: flex;
   flex: 0 0 var(--review-w);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .review__chat {
@@ -256,8 +265,7 @@
 }
 
 /* A different soft tone per person, so five cards do not read as one card
-   five times over. Both copies of the list share the order, so each client
-   keeps her colour. */
+   five times over. */
 .review:nth-child(5n + 2) .review__avatar {
   background: #f6e3d3;
   color: #8a4b22;
@@ -409,11 +417,10 @@
       'eyebrow'
       'headline'
       'standfirst'
-      'toggle';
+      'arrows';
   }
 
-  .reviews__toggle {
-    justify-self: start;
+  .reviews__arrows {
     margin: 18px 0 0;
   }
 
@@ -423,9 +430,8 @@
 }
 
 /* ============================================================
-   Reduced motion — the strip stands still and becomes a row you scroll
-   sideways. The component also drops the duplicate list and the Pause button;
-   hiding the copy here as well covers the moment before it re-renders.
+   Reduced motion — no reveal. The arrows and the drag jump straight to the
+   next card instead of gliding there (ReviewsSection.jsx, useDragScroll.js).
    ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
@@ -435,24 +441,7 @@
     transition: none;
   }
 
-  .reviews__viewport {
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    scroll-padding-inline: var(--gutter);
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-
-  .reviews__track {
-    padding-inline: var(--gutter);
-    animation: none;
-  }
-
-  .reviews__set[aria-hidden='true'] {
-    display: none;
-  }
-
-  .review {
-    scroll-snap-align: start;
+  .reviews__arrow {
+    transition: none;
   }
 }

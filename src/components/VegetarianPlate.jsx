@@ -45,14 +45,8 @@ const RIM = [
 
 const RESTING = {
   name: 'Six staples',
-  note: 'Nothing on a Healthystitch plate is there for decoration. Point at a piece and see what it is doing.',
+  note: 'Nothing on a plate from TheHealthyStitch is there for decoration. Point at a piece and see what it is doing.',
 }
-
-const COMPOSITION = [
-  ['Half', 'vegetables and fruit'],
-  ['A quarter', 'whole grains'],
-  ['A quarter', 'pulses, nuts, dairy'],
-]
 
 export default function VegetarianPlate() {
   const [activeId, setActiveId] = useState(null)
@@ -102,7 +96,7 @@ export default function VegetarianPlate() {
         </ul>
 
         <div className="plate__core">
-          <span className="plate__eyebrow">The plate</span>
+          <span className="plate__eyebrow">The Plate</span>
           <strong className="plate__name">{reading.name}</strong>
         </div>
       </div>
@@ -111,15 +105,6 @@ export default function VegetarianPlate() {
         <p className="plate__note" aria-live="polite">
           {reading.note}
         </p>
-
-        <dl className="plate__composition">
-          {COMPOSITION.map(([share, of]) => (
-            <div className="plate__share" key={of}>
-              <dt>{share}</dt>
-              <dd>{of}</dd>
-            </div>
-          ))}
-        </dl>
       </figcaption>
     </figure>
   )

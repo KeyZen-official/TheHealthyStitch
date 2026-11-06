@@ -63,14 +63,13 @@ Content of the Commons licence pages was summarised rather than reproduced.
 
 ## `transformations/` — client photographs
 
-Seven images served by `TRANSFORMATIONS` in `src/assets.js` and shown in the
+Six images served by `TRANSFORMATIONS` in `src/assets.js` and shown in the
 results section. These are **not** stock or freely licensed material: they are
 photographs of real, identifiable people, supplied by the clients themselves.
 
 | File | Source | Licence |
 |---|---|---|
 | `transformation-01.jpg` … `transformation-06.jpg` | Supplied by the client | Permission of the subject |
-| `credential.jpg` | Supplied | Permission of the subject |
 
 Nothing here is a licence question; it is a consent question, and the answer
 has to be on file **per person** before the file ships:
@@ -83,9 +82,9 @@ has to be on file **per person** before the file ships:
   removal is deleting the file and its entry in `src/assets.js` — keep it that
   cheap on purpose.
 
-`credential.jpg`, and `about/mitali.jpg` cropped from the same photograph,
-show Mitali herself with her Diploma in Nutrition. Her own photograph on her
-own site needs no one else's permission.
+`about/mitali.jpg`, the About portrait, shows Mitali herself with her Diploma
+in Nutrition. Her own photograph on her own site needs no one else's
+permission. It is no longer one of the results cards.
 
 Anyone else caught in frame counts too. `transformation-03.jpg` shows two
 other people: a man in a black shirt standing beside the client in the

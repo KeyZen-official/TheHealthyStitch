@@ -1,28 +1,45 @@
-import { useRef, useState } from 'react'
-import { Mail } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { CheckCircle2, RotateCcw, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react'
 import { WhatsAppIcon } from './icons/BrandIcons.jsx'
-import { CONTACT, mailtoHref, whatsappHref } from '../contact.js'
+import { CONTACT, whatsappHref } from '../contact.js'
+import { HEALTH_CATEGORIES } from '../data/plansData.js'
+import { saveEnquiry } from '../lib/enquiryStorage.js'
 import useInView from '../hooks/useInView.js'
 
-/**
- * The choices for "What would you like help with?". Drawn from what the site
- * already says the plans address, and from what the reviews describe. Add,
- * remove or reword freely; the message just carries the chosen text.
- */
-const GOALS = [
-  'Weight loss',
-  'Blood sugar or insulin resistance',
-  'Cholesterol or blood pressure',
-  'Healthier everyday eating',
-  'Something else',
+export const DIETARY_PREFERENCES = ['Jain', 'Vegetarian', 'Other']
+
+export const CONSULTATION_TIMES = [
+  'Morning (10 AM – 12 PM)',
+  'Evening (4 PM – 7 PM)',
+  'Flexible',
 ]
 
-const EMPTY = { name: '', phone: '', email: '', goal: '', message: '' }
+export const PROGRAMME_OPTIONS = [
+  'The Starter Programme (1 Month)',
+  'The Consistency Programme (3 Months)',
+  'The Lifestyle Transformation Programme (6 Months)',
+  'The Long-Term Wellness Programme (12 Months)',
+  'Undecided / Open to Recommendation',
+]
+
+export const DEFAULT_GOAL = 'Fat Loss / Weight Loss'
+
+const EMPTY = {
+  name: '',
+  phone: '',
+  goal: DEFAULT_GOAL,
+  customGoal: '',
+  programme: '',
+  diet: '',
+  customDiet: '',
+  consultationTime: '',
+  message: '',
+}
 
 /** Field order, for moving focus to the first one that needs fixing. */
-const ORDER = ['name', 'phone', 'email', 'goal']
+const ORDER = ['name', 'phone', 'goal', 'customGoal', 'diet', 'customDiet', 'consultationTime']
 
-const LIMITS = { name: 80, phone: 20, email: 120, message: 1000 }
+const LIMITS = { name: 80, phone: 20, goal: 100, customGoal: 150, programme: 100, diet: 40, customDiet: 100, consultationTime: 50, message: 1000 }
 
 /** Read out after links that open somewhere else, so nobody is surprised. */
 const NEW_TAB = <span className="u-sr"> (opens in a new tab)</span>
@@ -31,72 +48,98 @@ function validate(values) {
   const errors = {}
 
   if (values.name.trim().length < 2) {
-    errors.name = 'Enter your name.'
+    errors.name = 'Enter your name (at least 2 characters).'
   }
 
-  // Loose on purpose: spaces, dashes, brackets and a leading + are all fine.
   const phone = values.phone.trim()
   const digits = phone.replace(/\D/g, '')
   if (digits.length < 10 || digits.length > 15 || /[^\d\s()+-]/.test(phone)) {
-    errors.phone = 'Enter a phone number with at least 10 digits.'
-  }
-
-  const email = values.email.trim()
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.email = 'Check the email address, or leave it blank.'
+    errors.phone = 'Enter a valid phone number with at least 10 digits.'
   }
 
   if (!values.goal) {
-    errors.goal = 'Choose what you would like help with.'
+    errors.goal = 'Select your primary health goal.'
+  } else if (values.goal === 'Other' && !values.customGoal?.trim()) {
+    errors.customGoal = 'Please describe your health goal.'
+  }
+
+  if (!values.diet) {
+    errors.diet = 'Please select your dietary preference.'
+  } else if (values.diet === 'Other' && !values.customDiet?.trim()) {
+    errors.customDiet = 'Please describe your dietary preference.'
+  }
+
+  if (!values.consultationTime) {
+    errors.consultationTime = 'Please select your preferred consultation time.'
   }
 
   return errors
 }
 
-/** The enquiry as plain lines: the same text goes to WhatsApp and to email. */
+/** The enquiry as plain lines: formatted cleanly for WhatsApp. */
 function compose(values) {
+  const goalDisplay =
+    values.goal === 'Other' && values.customGoal?.trim()
+      ? `Other (${values.customGoal.trim()})`
+      : values.goal
+  const dietDisplay =
+    values.diet === 'Other' && values.customDiet?.trim()
+      ? `Other (${values.customDiet.trim()})`
+      : values.diet
+
   const lines = [
-    "Hi Mitali! I'd like to enquire about a nutrition plan.",
+    "Hi Mitali! I'd like to enquire about a personalised nutrition plan with TheHealthyStitch.",
     '',
     `Name: ${values.name.trim()}`,
-    `Phone: ${values.phone.trim()}`,
+    `Phone / WhatsApp: ${values.phone.trim()}`,
   ]
-  if (values.email.trim()) lines.push(`Email: ${values.email.trim()}`)
-  lines.push(`Looking for help with: ${values.goal}`)
-  if (values.message.trim()) lines.push('', values.message.trim())
+  if (values.programme) lines.push(`Selected Programme: ${values.programme}`)
+  lines.push(`Primary Health Goal: ${goalDisplay}`)
+  lines.push(`Dietary Preference: ${dietDisplay}`)
+  lines.push(`Preferred Consultation Time: ${values.consultationTime}`)
+  if (values.message.trim()) {
+    lines.push('', `Notes & Questions: ${values.message.trim()}`)
+  }
   return lines
 }
 
-/**
- * The enquiry form.
- *
- * The site has no server, so nothing is submitted to it. "Send on WhatsApp"
- * opens a chat with Mitali with the enquiry already typed out; "Send by email"
- * opens the visitor's email app the same way. The visitor presses send there,
- * so the enquiry reaches Mitali from their own number or address, and nothing
- * is stored anywhere in between.
- *
- * Errors appear only after a first attempt to send, then clear as each field
- * is fixed. A failed send moves focus to the first field that needs fixing,
- * and that field's error is part of its description, so a screen reader reads
- * the problem out with the field.
- */
-export default function EnquirySection() {
+export default function EnquirySection({ selectedGoal, selectedProgramme }) {
   const [ref, inView] = useInView()
   const [values, setValues] = useState(EMPTY)
   const [errors, setErrors] = useState({})
   const [checked, setChecked] = useState(false)
   const [sent, setSent] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [goalHighlight, setGoalHighlight] = useState(false)
   const controls = useRef({})
+
+  // When a goal is passed in
+  useEffect(() => {
+    if (selectedGoal) {
+      setValues((prev) => ({ ...prev, goal: selectedGoal }))
+      setGoalHighlight(true)
+      const timer = setTimeout(() => {
+        setGoalHighlight(false)
+      }, 3500)
+      return () => clearTimeout(timer)
+    }
+  }, [selectedGoal])
+
+  // When a programme is passed in
+  useEffect(() => {
+    if (selectedProgramme) {
+      setValues((prev) => ({ ...prev, programme: selectedProgramme }))
+    }
+  }, [selectedProgramme])
 
   const change = (name) => (event) => {
     const next = { ...values, [name]: event.target.value }
     setValues(next)
     if (checked) setErrors(validate(next))
-    setSent(null)
+    if (sent) setSent(null)
   }
 
-  const send = (channel) => {
+  const send = async () => {
     const found = validate(values)
     setChecked(true)
     setErrors(found)
@@ -108,20 +151,42 @@ export default function EnquirySection() {
       return
     }
 
+    setIsSubmitting(true)
+
+    // Save to enquiry management system (localStorage + API)
+    await saveEnquiry({
+      name: values.name.trim(),
+      phone: values.phone.trim(),
+      email: '',
+      programme: values.programme,
+      goal: values.goal,
+      diet: values.diet,
+      consultationTime: values.consultationTime,
+      message: values.message.trim(),
+      channel: 'whatsapp',
+    })
+
     const lines = compose(values)
-    if (channel === 'whatsapp') {
-      const href = whatsappHref(lines.join('\n'))
-      window.open(href, '_blank', 'noopener,noreferrer')
-      setSent({ channel, href })
-    } else {
-      // CRLF: RFC 6068 asks for it between lines of a mailto body.
-      const href = mailtoHref(
-        `Nutrition plan enquiry from ${values.name.trim()}`,
-        lines.join('\r\n'),
-      )
-      window.location.href = href
-      setSent({ channel, href })
-    }
+    const href = whatsappHref(lines.join('\n'))
+    window.open(href, '_blank', 'noopener,noreferrer')
+
+    setSent({
+      channel: 'whatsapp',
+      href,
+      name: values.name.trim(),
+      programme: values.programme,
+      goal: values.goal,
+      diet: values.diet,
+      consultationTime: values.consultationTime,
+    })
+    setIsSubmitting(false)
+  }
+
+  const resetForm = () => {
+    setValues(EMPTY)
+    setChecked(false)
+    setErrors({})
+    setSent(null)
   }
 
   /** The props every control shares: value, change handler, error wiring. */
@@ -154,7 +219,7 @@ export default function EnquirySection() {
     >
       <header className="enquiry__head">
         <p className="enquiry__eyebrow">
-          <span>Enquiry form</span>
+          <span>Enquiry &amp; Consultation</span>
           <span className="enquiry__rule" aria-hidden="true" />
         </p>
       </header>
@@ -162,11 +227,11 @@ export default function EnquirySection() {
       <div className="enquiry__body">
         <div className="enquiry__intro">
           <h2 className="enquiry__headline" id="enquiry-headline">
-            Tell Mitali about your <em>goals</em>
+            Begin Your Journey With <em>TheHealthyStitch</em>
           </h2>
           <p className="enquiry__standfirst">
-            A few details, and your enquiry goes straight to her on WhatsApp, or
-            by email if you prefer.
+            Share your health goals and lifestyle preferences. Your enquiry is saved
+            and opens immediately in WhatsApp for Mitali.
           </p>
 
           <ol className="enquiry__steps">
@@ -174,156 +239,302 @@ export default function EnquirySection() {
               <span className="enquiry__step-num" aria-hidden="true">
                 01
               </span>
-              <span>Fill in a few details.</span>
+              <span>Select your primary health goal and dietary preference.</span>
             </li>
             <li>
               <span className="enquiry__step-num" aria-hidden="true">
                 02
               </span>
-              <span>Choose Send on WhatsApp, or Send by email.</span>
+              <span>Specify your preferred consultation time window.</span>
             </li>
             <li>
               <span className="enquiry__step-num" aria-hidden="true">
                 03
               </span>
-              <span>
-                Your message opens ready to go. Press send there, and it reaches
-                Mitali.
-              </span>
+              <span>Send on WhatsApp to connect directly with Mitali.</span>
             </li>
           </ol>
+
+          <div className="enquiry__assurance">
+            <ShieldCheck className="enquiry__assurance-icon" />
+            <p>
+              Your details are kept completely private and submitted directly to Mitali Shah
+              for personalised clinical assessment.
+            </p>
+          </div>
         </div>
 
-        <form
-          className="enquiry__form"
-          noValidate
-          aria-labelledby="enquiry-headline"
-          onSubmit={(event) => {
-            event.preventDefault()
-            send('whatsapp')
-          }}
-        >
-          <div className="enquiry__grid">
-            <div className="enquiry__field">
-              <label className="enquiry__label" htmlFor="enquiry-name">
-                Your name
-              </label>
-              <input
-                className="enquiry__control"
-                type="text"
-                autoComplete="name"
-                required
-                {...bind('name')}
-              />
-              {error('name')}
+        {sent ? (
+          <div className="enquiry__success-card" role="alert">
+            <div className="enquiry__success-badge">
+              <CheckCircle2 className="enquiry__success-icon" />
+              <span>Enquiry Submitted Successfully</span>
             </div>
 
-            <div className="enquiry__field">
-              <label className="enquiry__label" htmlFor="enquiry-phone">
-                Phone / WhatsApp number
-              </label>
-              <input
-                className="enquiry__control"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                required
-                {...bind('phone')}
-              />
-              {error('phone')}
+            <h3 className="enquiry__success-title">
+              Thank you, {sent.name}!
+            </h3>
+
+            <p className="enquiry__success-desc">
+              Your consultation enquiry has been recorded in our system and prepared for Mitali.
+              WhatsApp should now be open with your enquiry pre-typed. Simply press send there.
+            </p>
+
+            <div className="enquiry__success-summary">
+              {sent.programme && (
+                <div className="enquiry__success-item">
+                  <span className="enquiry__success-label">Selected Programme</span>
+                  <strong className="enquiry__success-value">{sent.programme}</strong>
+                </div>
+              )}
+              <div className="enquiry__success-item">
+                <span className="enquiry__success-label">Primary Health Goal</span>
+                <strong className="enquiry__success-value">
+                  {sent.goal === 'Other' && sent.customGoal ? `Other (${sent.customGoal})` : sent.goal}
+                </strong>
+              </div>
+              <div className="enquiry__success-item">
+                <span className="enquiry__success-label">Dietary Preference</span>
+                <strong className="enquiry__success-value">
+                  {sent.diet === 'Other' && sent.customDiet ? `Other (${sent.customDiet})` : sent.diet}
+                </strong>
+              </div>
+              <div className="enquiry__success-item">
+                <span className="enquiry__success-label">Preferred Time</span>
+                <strong className="enquiry__success-value">{sent.consultationTime}</strong>
+              </div>
             </div>
 
-            <div className="enquiry__field">
-              <label className="enquiry__label" htmlFor="enquiry-email">
-                Email <span className="enquiry__optional">(optional)</span>
-              </label>
-              <input
-                className="enquiry__control"
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                {...bind('email')}
-              />
-              {error('email')}
-            </div>
-
-            <div className="enquiry__field">
-              <label className="enquiry__label" htmlFor="enquiry-goal">
-                What would you like help with?
-              </label>
-              <select
-                className={`enquiry__control${values.goal ? '' : ' is-placeholder'}`}
-                required
-                {...bind('goal')}
+            <div className="enquiry__success-actions">
+              <a
+                href={sent.href}
+                className="enquiry__btn enquiry__btn--whatsapp"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <option value="" disabled>
-                  Choose one
-                </option>
-                {GOALS.map((goal) => (
-                  <option key={goal} value={goal}>
-                    {goal}
+                <WhatsAppIcon className="enquiry__btn-icon" />
+                Reopen in WhatsApp
+                {NEW_TAB}
+              </a>
+
+              <button
+                type="button"
+                className="enquiry__btn enquiry__btn--reset"
+                onClick={resetForm}
+              >
+                <RotateCcw className="enquiry__btn-icon" aria-hidden="true" />
+                Submit Another Enquiry
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form
+            className="enquiry__form"
+            noValidate
+            aria-labelledby="enquiry-headline"
+            onSubmit={(event) => {
+              event.preventDefault()
+              send()
+            }}
+          >
+            <div className="enquiry__grid">
+              {/* Field: Name */}
+              <div className="enquiry__field">
+                <label className="enquiry__label" htmlFor="enquiry-name">
+                  Your name <span className="enquiry__required">*</span>
+                </label>
+                <input
+                  className="enquiry__control"
+                  type="text"
+                  autoComplete="name"
+                  placeholder="E.g. Ananya Mehta"
+                  required
+                  {...bind('name')}
+                />
+                {error('name')}
+              </div>
+
+              {/* Field: Phone */}
+              <div className="enquiry__field">
+                <label className="enquiry__label" htmlFor="enquiry-phone">
+                  Phone / WhatsApp number <span className="enquiry__required">*</span>
+                </label>
+                <input
+                  className="enquiry__control"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  placeholder="E.g. +91 98200 12345"
+                  required
+                  {...bind('phone')}
+                />
+                {error('phone')}
+              </div>
+
+              {/* Field: Preferred Programme (Optional / Preselected from Plans page) */}
+              <div className="enquiry__field">
+                <label className="enquiry__label" htmlFor="enquiry-programme">
+                  Preferred Programme <span className="enquiry__optional">(optional)</span>
+                  {values.programme && (
+                    <span className="enquiry__preselected-tag">
+                      <Sparkles className="enquiry__preselected-icon" /> Preselected
+                    </span>
+                  )}
+                </label>
+                <select
+                  className={`enquiry__control${values.programme ? '' : ' is-placeholder'}`}
+                  {...bind('programme')}
+                >
+                  <option value="">Choose a programme</option>
+                  {PROGRAMME_OPTIONS.map((prog) => (
+                    <option key={prog} value={prog}>
+                      {prog}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Field 1 (Mandatory): Primary Health Goal */}
+              <div className={`enquiry__field${goalHighlight ? ' is-highlighted' : ''}`}>
+                <label className="enquiry__label" htmlFor="enquiry-goal">
+                  Primary Health Goal <span className="enquiry__required">*</span>
+                  {values.goal && selectedGoal === values.goal && (
+                    <span className="enquiry__preselected-tag">
+                      <Sparkles className="enquiry__preselected-icon" /> Preselected
+                    </span>
+                  )}
+                </label>
+                <select
+                  className={`enquiry__control${values.goal ? '' : ' is-placeholder'}`}
+                  required
+                  {...bind('goal')}
+                >
+                  <option value="" disabled>
+                    Select from 14 Health Categories
                   </option>
-                ))}
-              </select>
-              {error('goal')}
+                  {HEALTH_CATEGORIES.map((cat) => (
+                    <option key={cat.id} value={cat.title}>
+                      {cat.title}
+                    </option>
+                  ))}
+                  <option value="Other">Other</option>
+                </select>
+                {error('goal')}
+              </div>
+
+              {/* Conditional Description for Other Goal */}
+              {values.goal === 'Other' && (
+                <div className="enquiry__field enquiry__field--wide">
+                  <label className="enquiry__label" htmlFor="enquiry-customGoal">
+                    Describe Your Health Goal <span className="enquiry__required">*</span>
+                  </label>
+                  <input
+                    id="enquiry-customGoal"
+                    className="enquiry__control"
+                    type="text"
+                    placeholder="E.g. High cholesterol, sports nutrition, allergy management..."
+                    autoFocus
+                    {...bind('customGoal')}
+                  />
+                  {error('customGoal')}
+                </div>
+              )}
+
+              {/* Field 2 (Mandatory): Jain / Vegetarian Preference */}
+              <div className="enquiry__field">
+                <label className="enquiry__label" htmlFor="enquiry-diet">
+                  Dietary Preference <span className="enquiry__required">*</span>
+                </label>
+                <select
+                  className={`enquiry__control${values.diet ? '' : ' is-placeholder'}`}
+                  required
+                  {...bind('diet')}
+                >
+                  <option value="" disabled>
+                    Select Dietary Preference
+                  </option>
+                  {DIETARY_PREFERENCES.map((pref) => (
+                    <option key={pref} value={pref}>
+                      {pref}
+                    </option>
+                  ))}
+                </select>
+                {error('diet')}
+              </div>
+
+              {/* Conditional Description for Other Diet */}
+              {values.diet === 'Other' && (
+                <div className="enquiry__field enquiry__field--wide">
+                  <label className="enquiry__label" htmlFor="enquiry-customDiet">
+                    Describe Dietary Preference <span className="enquiry__required">*</span>
+                  </label>
+                  <input
+                    id="enquiry-customDiet"
+                    className="enquiry__control"
+                    type="text"
+                    placeholder="E.g. Vegan, eggetarian, gluten-free, dairy-free..."
+                    autoFocus
+                    {...bind('customDiet')}
+                  />
+                  {error('customDiet')}
+                </div>
+              )}
+
+              {/* Field 3 (Mandatory): Preferred Consultation Time */}
+              <div className="enquiry__field">
+                <label className="enquiry__label" htmlFor="enquiry-consultationTime">
+                  Preferred Consultation Time <span className="enquiry__required">*</span>
+                </label>
+                <select
+                  className={`enquiry__control${values.consultationTime ? '' : ' is-placeholder'}`}
+                  required
+                  {...bind('consultationTime')}
+                >
+                  <option value="" disabled>
+                    Select Preferred Time Window
+                  </option>
+                  {CONSULTATION_TIMES.map((time) => (
+                    <option key={time} value={time}>
+                      {time}
+                    </option>
+                  ))}
+                </select>
+                {error('consultationTime')}
+              </div>
+
+              {/* Field: Message (Optional) */}
+              <div className="enquiry__field enquiry__field--wide">
+                <label className="enquiry__label" htmlFor="enquiry-message">
+                  Anything else Mitali should know?{' '}
+                  <span className="enquiry__optional">(optional)</span>
+                </label>
+                <textarea
+                  className="enquiry__control"
+                  rows={4}
+                  placeholder="Your daily schedule, known allergies, medical history, or foods you love…"
+                  {...bind('message')}
+                />
+              </div>
             </div>
 
-            <div className="enquiry__field enquiry__field--wide">
-              <label className="enquiry__label" htmlFor="enquiry-message">
-                Anything else Mitali should know?{' '}
-                <span className="enquiry__optional">(optional)</span>
-              </label>
-              <textarea
-                className="enquiry__control"
-                rows={4}
-                placeholder="Your routine, the foods you love, questions about plans…"
-                {...bind('message')}
-              />
+            <div className="enquiry__actions">
+              <button
+                type="submit"
+                className="enquiry__btn enquiry__btn--whatsapp"
+                disabled={isSubmitting}
+              >
+                <WhatsAppIcon className="enquiry__btn-icon" />
+                <span>Send on WhatsApp</span>
+                {NEW_TAB}
+              </button>
             </div>
-          </div>
 
-          <div className="enquiry__actions">
-            <button type="submit" className="enquiry__btn enquiry__btn--whatsapp">
-              <WhatsAppIcon className="enquiry__btn-icon" />
-              Send on WhatsApp
-              {NEW_TAB}
-            </button>
-            <button
-              type="button"
-              className="enquiry__btn enquiry__btn--email"
-              onClick={() => send('email')}
-            >
-              <Mail className="enquiry__btn-icon" aria-hidden="true" />
-              Send by email
-            </button>
-          </div>
-
-          {/* Always in the page, so screen readers announce what appears. */}
-          <div className="enquiry__status" role="status">
-            {sent?.channel === 'whatsapp' ? (
-              <p>
-                WhatsApp should now be open with your enquiry typed out. Press
-                send there to reach Mitali. Didn&rsquo;t open?{' '}
-                <a href={sent.href} target="_blank" rel="noopener noreferrer">
-                  Open WhatsApp
-                  {NEW_TAB}
-                </a>
-              </p>
-            ) : null}
-            {sent?.channel === 'email' ? (
-              <p>
-                Your email app should now be open with your enquiry typed out.
-                Press send there. Nothing opened? <a href={sent.href}>Try again</a>,
-                or write to {CONTACT.email}.
-              </p>
-            ) : null}
-          </div>
-
-          <p className="enquiry__privacy">
-            Nothing you type here is stored on this website. It goes only to
-            Mitali, from your own WhatsApp or email.
-          </p>
-        </form>
+            <p className="enquiry__privacy">
+              All submitted enquiries are encrypted and directly routed to Mitali Shah.
+              Nothing is shared with external commercial advertisers.
+            </p>
+          </form>
+        )}
       </div>
     </section>
   )

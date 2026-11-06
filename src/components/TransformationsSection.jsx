@@ -41,12 +41,12 @@ export default function TransformationsSection() {
     >
       <header className="shift__head">
         <p className="shift__eyebrow">
-          <span>Real clients</span>
+          <span>Real Clients</span>
           <span className="shift__rule" aria-hidden="true" />
         </p>
 
         <h2 className="shift__headline" id="shift-headline">
-          Before, and <em>after</em>
+          Before, And <em>After</em>
         </h2>
 
         <p className="shift__standfirst">

@@ -153,6 +153,171 @@
   color: var(--text-soft);
 }
 
+.enquiry__required {
+  color: #a3281d;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+.enquiry__preselected-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--headline);
+  background: rgba(105, 133, 31, 0.12);
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.enquiry__preselected-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.enquiry__field.is-highlighted .enquiry__control {
+  border-color: var(--headline);
+  box-shadow: 0 0 0 3px rgba(105, 133, 31, 0.25);
+  animation: pulseHighlight 1.4s ease 2;
+}
+
+@keyframes pulseHighlight {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(105, 133, 31, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(105, 133, 31, 0.45);
+  }
+}
+
+.enquiry__assurance {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 14px 16px;
+  background: var(--panel-proof);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.enquiry__assurance-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--olive-ink);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.enquiry__assurance p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* Success Card */
+.enquiry__success-card {
+  padding: clamp(24px, 3.5vw, 40px);
+  border: 1px solid var(--headline);
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 20px 45px -15px rgba(105, 133, 31, 0.2);
+  animation: modalSlideUp 260ms ease;
+}
+
+.enquiry__success-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--headline);
+  background: rgba(105, 133, 31, 0.12);
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+}
+
+.enquiry__success-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.enquiry__success-title {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.5vw, 32px);
+  font-weight: 550;
+  color: var(--text);
+}
+
+.enquiry__success-desc {
+  margin: 0 0 24px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+
+.enquiry__success-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 18px;
+  background: var(--panel-proof);
+  border: 1px solid rgba(56, 56, 50, 0.14);
+  border-radius: 12px;
+  margin-bottom: 26px;
+}
+
+@media (max-width: 680px) {
+  .enquiry__success-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+.enquiry__success-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.enquiry__success-label {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.enquiry__success-value {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.enquiry__success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.enquiry__btn--reset {
+  border: 1px solid var(--rule);
+  color: var(--text);
+  background: transparent;
+}
+
+.enquiry__btn--reset:hover {
+  background: rgba(56, 56, 50, 0.06);
+}
+
 /* The page's own olive focus ring (global.css) marks the focused field;
    the border darkens with it. */
 .enquiry__control {
@@ -261,15 +426,6 @@ select.enquiry__control option {
 
 .enquiry__btn--whatsapp:hover {
   background: #25d366;
-}
-
-.enquiry__btn--email {
-  border: 1px solid var(--rule);
-  color: var(--text);
-}
-
-.enquiry__btn--email:hover {
-  background: rgba(56, 56, 50, 0.06);
 }
 
 /* The live region stays in the page with nothing in it; only the message

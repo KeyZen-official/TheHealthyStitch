@@ -18,9 +18,9 @@ from PIL import Image, ImageDraw
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
-# The pixel sizes of the seven supplied photographs, in slot order.
+# The pixel sizes of the six supplied photographs, in slot order.
 SIZES = [(1024, 1010), (870, 1024), (1024, 1024), (1024, 1024),
-         (951, 1024), (1024, 1024), (512, 1024)]
+         (951, 1024), (1024, 1024)]
 
 HEAD = (255, 255, 0)
 FEET = (0, 255, 255)
@@ -73,8 +73,7 @@ def check(src: pathlib.Path, out: pathlib.Path) -> int:
         fails.append(f"script exited {run.returncode}: {run.stderr.strip()}")
 
     expected = ["transformation-01", "transformation-02", "transformation-03",
-                "transformation-04", "transformation-05", "transformation-06",
-                "credential"]
+                "transformation-04", "transformation-05", "transformation-06"]
 
     for slot in expected:
         path = out / f"{slot}.jpg"

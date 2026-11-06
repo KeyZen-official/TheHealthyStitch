@@ -1,7 +1,7 @@
 // Central asset registry.
 // Swap a path here and the artwork changes everywhere it is used.
 
-export const CAPSULE_IMAGE = '/assets/nutrition-capsule.png'
+export const CAPSULE_IMAGE = '/assets/Healthy Produce Capsule Arrangement (2).png'
 
 /**
  * Hero slideshow, in running order.
@@ -17,28 +17,25 @@ export const CAPSULE_IMAGE = '/assets/nutrition-capsule.png'
  */
 export const LIFESTYLE_SLIDES = [
   {
-    id: 'kitchen',
-    src: '/assets/lifestyle-kitchen.jpg',
-    alt: 'Woman whisking a bowl at a kitchen counter spread with tomatoes, peppers and fruit',
-    caption: 'Breakfast, built on purpose',
-    focus: '50% 32%',
-    tone: 'brightness(1.14) contrast(0.96) saturate(1.04)',
+    id: 'slide-1',
+    src: '/assets/img1.jpeg',
+    alt: 'Healthy lifestyle and nutritious meals with TheHealthyStitch',
+    caption: 'Made For Everyday Living',
+    focus: 'center',
   },
   {
-    id: 'harvest',
-    src: '/assets/lifestyle-harvest.jpg',
-    alt: 'Woman carrying a wooden crate of freshly harvested onions and garlic',
-    caption: 'Straight from the crate',
-    focus: '54% 40%',
-    tone: 'brightness(1.03) contrast(0.98)',
+    id: 'slide-2',
+    src: '/assets/img2.jpeg',
+    alt: 'Fresh, balanced vegetarian and jain nutrition with TheHealthyStitch',
+    caption: 'Nutrition In Every Bite',
+    focus: 'center',
   },
   {
-    id: 'nourish',
-    src: '/assets/lifestyle-nourish.jpg',
-    alt: 'Open palm holding a measured handful of almonds beside a glass bowl',
-    caption: 'Portions you can picture',
-    focus: '44% 54%',
-    tone: 'brightness(1.16) contrast(0.95) saturate(1.06)',
+    id: 'slide-3',
+    src: '/assets/img3.jpeg',
+    alt: 'Sustainable habits and healthy lifestyle with TheHealthyStitch',
+    caption: 'Healthy Habits, Real Life',
+    focus: 'center',
   },
 ]
 
@@ -115,12 +112,6 @@ export const TRANSFORMATIONS = [
     title: 'Transformation No. 06',
     image: '/assets/transformations/transformation-06.jpg',
     alt: 'The same client side by side: at the left in a black cardigan over a striped dress, at the right in a yellow puff-sleeve dress.',
-  },
-  {
-    id: 'credential',
-    title: 'Diploma in Nutrition',
-    image: '/assets/transformations/credential.jpg',
-    alt: 'A smiling woman in a red floral top and jeans holding up her Diploma in Nutrition certificate.',
   },
 ]
 

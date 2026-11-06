@@ -1,16 +1,19 @@
-import { useState } from 'react'
-import { Pause, Play } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import useInView from '../hooks/useInView.js'
 import useReducedMotion from '../hooks/useReducedMotion.js'
+import useDragScroll from '../hooks/useDragScroll.js'
 
 /**
  * Client reviews, as they arrived on WhatsApp.
  *
- * Transcribed word for word from the screenshots the clients' chats came in,
- * typos and emoji included: the point of the section is that nobody has
- * polished them. Only the client's own messages are kept. Contact-name
- * details (surnames, relationships), profile photos and the replies are left
- * out, and each person appears by first name only.
+ * Transcribed from the screenshots the clients' chats came in, then corrected
+ * for spelling, grammar and capital letters, as asked. What each client said
+ * is unchanged, and the note under the row says the messages were edited.
+ * Only the client's own messages are kept. Contact-name details (surnames,
+ * relationships), profile photos and the replies are left out, and each
+ * person appears by first name only. Jalpa wrote partly in Gujarati, in
+ * English letters; those words stay as she wrote them, with a translation.
  *
  * `translation` is shown under messages that are not in English.
  */
@@ -21,7 +24,7 @@ const REVIEWS = [
     messages: [
       {
         time: '10:05 PM',
-        text: 'Honestly, my experience with you was genuinely amazing\u2764\uFE0F I not only saw great results in my weight loss journey but also felt really supported throughout the process. What I personally loved the most was how you cared about my mental health as well, understood me on my personal level and made sure I felt comfortable and motivated. You went beyond just giving a diet plan, and that made a huge difference for me. I am genuinely grateful for your guidance and would definitely recommend you to anyone looking for a dietician who truly cares \uD83D\uDC95',
+        text: 'Honestly, my experience with you was genuinely amazing. \u2764\uFE0F I not only saw great results in my weight loss journey but also felt really supported throughout the process. What I personally loved the most was how you cared about my mental health as well, understood me on a personal level and made sure I felt comfortable and motivated. You went beyond just giving a diet plan, and that made a huge difference for me. I am genuinely grateful for your guidance and would definitely recommend you to anyone looking for a dietician who truly cares. \uD83D\uDC95',
       },
     ],
   },
@@ -31,16 +34,16 @@ const REVIEWS = [
     messages: [
       {
         time: '2:38 PM',
-        text: 'Thank u very much...te mane saras help kari weight loss ma',
+        text: 'Thank you very much\u2026 Te mane saras help kari weight loss ma.',
       },
       {
         time: '2:40 PM',
-        text: 'Bau saras journey rahi tari saathe..u r a fantastic person....with good soul....I enjoyed every meal u gave....so Thank you once again',
+        text: 'Bau saras journey rahi tari saathe\u2026 You are a fantastic person with a good soul. I enjoyed every meal you gave me. So thank you once again.',
       },
     ],
     translation: {
       from: 'Gujarati',
-      text: '\u201CThank you very much\u2026 you helped me so much with my weight loss.\u201D \u201CIt was a lovely journey with you\u2026\u201D',
+      text: '\u201CThank you very much\u2026 You helped me so much with my weight loss.\u201D \u201CIt was a lovely journey with you\u2026\u201D',
     },
   },
   {
@@ -49,7 +52,7 @@ const REVIEWS = [
     messages: [
       {
         time: '7:31 AM',
-        text: 'Hi, I had a really good experience with your plan. It was practical to follow and helped me become more mindful of my eating habits and nutrition. Really appreciate the effort you put into making the plan easy to follow in my daily routine. Thank you for all your help!',
+        text: 'Hi, I had a really good experience with your plan. It was practical to follow and helped me become more mindful of my eating habits and nutrition. I really appreciate the effort you put into making the plan easy to follow in my daily routine. Thank you for all your help!',
       },
     ],
   },
@@ -59,7 +62,7 @@ const REVIEWS = [
     messages: [
       {
         time: '10:52 AM',
-        text: 'I had done the diet from you when it was my marriage happening and the diet plan was very practical and the receipes were damn easy to make and while the shopping also i was majorly eating healthy.. Sugar was almost not there in the 2-3 months of time. I had a pretty good experience. I would rejoin it even now.',
+        text: 'I followed your diet plan around the time of my wedding. The plan was very practical, the recipes were really easy to make, and even while out shopping, I mostly ate healthy food. There was almost no sugar in my diet for those 2\u20133 months. I had a pretty good experience, and I would rejoin even now.',
       },
     ],
   },
@@ -69,11 +72,14 @@ const REVIEWS = [
     messages: [
       {
         time: '3:15 PM',
-        text: "I was under her plan for good 6months... She is very knowledgeable. I found lot of improvement in my symptoms of insulin resistance within a month of starting her diet plans. She gives lot of options so you didn't get bored of eating same food. She listens peacefully & addresses your cravings as well.She is available all the time for any query or questions.She really gives positive vibes & her plan worked really well for me \uD83D\uDE0D.. Thank you for all your efforts Mitali",
+        text: 'I was on her plan for a good 6 months. She is very knowledgeable. I found a lot of improvement in my symptoms of insulin resistance within a month of starting her diet plans. She gives lots of options, so you don\u2019t get bored of eating the same food. She listens patiently and addresses your cravings as well. She is available all the time for any queries or questions. She really gives positive vibes, and her plan worked really well for me. \uD83D\uDE0D Thank you for all your efforts, Mitali.',
       },
     ],
   },
 ]
+
+/** What the row stops on, for the arrows and the mouse drag. */
+const CARD = '.review'
 
 /** One chat card: a header with the client's name, then her messages. */
 function ReviewCard({ review }) {
@@ -88,7 +94,7 @@ function ReviewCard({ review }) {
           </span>
           <span className="review__who">
             <span className="review__name">{name}</span>
-            <span className="review__via">on WhatsApp</span>
+            <span className="review__via">On WhatsApp</span>
           </span>
         </figcaption>
 
@@ -122,95 +128,152 @@ function ReviewCard({ review }) {
   )
 }
 
+/** Whether the row can move either way, and whether it needs to at all. */
+function readEdges(row) {
+  const max = row.scrollWidth - row.clientWidth
+  return { fits: max <= 1, atStart: row.scrollLeft <= 1, atEnd: row.scrollLeft >= max - 1 }
+}
+
+const sameEdges = (a, b) => a.fits === b.fits && a.atStart === b.atStart && a.atEnd === b.atEnd
+
 /**
- * The reviews, running sideways in a loop.
+ * The reviews, in a row the visitor slides sideways. Nothing moves on its
+ * own.
  *
- * The strip is two identical lists side by side, slid left by exactly one
- * list's width and started again, so the join never shows. The copy is
- * aria-hidden: a screen reader hears each review once.
- *
- * Moving text that a reader cannot stop fails WCAG 2.2.2, and hover is not a
- * way to stop it on a phone or from a keyboard, so there is a real pause
- * button as well. With reduced motion the strip does not move at all: it
- * becomes a row you scroll sideways, and the copy and the button go away.
+ * The row is an ordinary sideways scroller with CSS snap points, so a finger
+ * or a trackpad slides it natively and it comes to rest on a card. A mouse
+ * can drag it too (useDragScroll), and the arrows beside the headline step
+ * through it one card at a time for anyone not swiping. Once it has focus,
+ * the arrow keys scroll it. On a screen wide enough to show every card, the
+ * arrows and the tab stop go away, because there is nothing to scroll.
  */
 export default function ReviewsSection() {
   const [ref, inView] = useInView()
   const reduced = useReducedMotion()
-  const [paused, setPaused] = useState(false)
+  const rowRef = useRef(null)
+  const [edges, setEdges] = useState({ fits: false, atStart: true, atEnd: false })
+
+  useDragScroll(rowRef, { item: CARD, reduced })
+
+  useEffect(() => {
+    const row = rowRef.current
+    if (!row) return undefined
+    let frame = 0
+
+    const read = () => {
+      frame = 0
+      const next = readEdges(row)
+      setEdges((prev) => (sameEdges(prev, next) ? prev : next))
+    }
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(read)
+    }
+
+    read()
+    row.addEventListener('scroll', schedule, { passive: true })
+    // The row and the list both change size with the screen.
+    const resize = new ResizeObserver(schedule)
+    resize.observe(row)
+    if (row.firstElementChild) resize.observe(row.firstElementChild)
+    return () => {
+      row.removeEventListener('scroll', schedule)
+      resize.disconnect()
+      cancelAnimationFrame(frame)
+    }
+  }, [])
+
+  /** One card left or right. The snap points make it land square. */
+  const go = (direction) => {
+    const row = rowRef.current
+    if (!row) return
+    if ((direction < 0 && edges.atStart) || (direction > 0 && edges.atEnd)) return
+
+    const cards = row.querySelectorAll(CARD)
+    const step = cards.length > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : row.clientWidth
+    const max = row.scrollWidth - row.clientWidth
+    const index = Math.round(row.scrollLeft / step) + direction
+    row.scrollTo({
+      left: Math.min(max, Math.max(0, index * step)),
+      behavior: reduced ? 'auto' : 'smooth',
+    })
+  }
 
   return (
     <section
-      className={`reviews${inView ? ' is-revealed' : ''}${paused ? ' is-paused' : ''}`}
+      className={`reviews${inView ? ' is-revealed' : ''}`}
       id="reviews"
       ref={ref}
       aria-labelledby="reviews-headline"
     >
       <header className="reviews__head">
         <p className="reviews__eyebrow">
-          <span>Client reviews</span>
+          <span>Client Reviews</span>
           <span className="reviews__rule" aria-hidden="true" />
         </p>
 
         <h2 className="reviews__headline" id="reviews-headline">
-          Straight from the <em>chat</em>
+          Straight From The <em>Chat</em>
         </h2>
 
         <p className="reviews__standfirst">
-          What clients wrote to Mitali on WhatsApp after their plans, word for
-          word.
+          What clients wrote to Mitali on WhatsApp after their plans.
         </p>
 
-        {/* Last in the source, so it is read just before the strip it
-            controls. The grid in reviews.css lifts it beside the headline on
-            wide screens. */}
-        {reduced ? null : (
-          <button
-            type="button"
-            className="reviews__toggle"
-            onClick={() => setPaused((value) => !value)}
-            aria-label={paused ? 'Play the moving reviews' : 'Pause the moving reviews'}
-          >
-            {paused ? (
-              <Play className="reviews__toggle-icon" aria-hidden="true" />
-            ) : (
-              <Pause className="reviews__toggle-icon" aria-hidden="true" />
-            )}
-            <span aria-hidden="true">{paused ? 'Play' : 'Pause'}</span>
-          </button>
+        {/* Last in the source, so they are read just before the row they
+            move. The grid in reviews.css lifts them beside the headline on
+            wide screens. aria-disabled rather than disabled: a disabled
+            button drops the focus of whoever just pressed it to reach the
+            end. */}
+        {edges.fits ? null : (
+          <div className="reviews__arrows">
+            <button
+              type="button"
+              className="reviews__arrow"
+              aria-label="Previous review"
+              aria-controls="reviews-row"
+              aria-disabled={edges.atStart}
+              onClick={() => go(-1)}
+            >
+              <ArrowLeft aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className="reviews__arrow"
+              aria-label="Next review"
+              aria-controls="reviews-row"
+              aria-disabled={edges.atEnd}
+              onClick={() => go(1)}
+            >
+              <ArrowRight aria-hidden="true" />
+            </button>
+          </div>
         )}
       </header>
 
       <div
-        className="reviews__viewport"
+        ref={rowRef}
+        id="reviews-row"
+        className={`reviews__viewport${edges.fits ? '' : ' is-scrollable'}`}
         role="region"
         aria-label="Client reviews"
-        // Only a scroller needs a tab stop: with reduced motion the row is
-        // scrolled by hand, and a keyboard has to be able to reach it.
-        tabIndex={reduced ? 0 : undefined}
+        // A tab stop only while there is something to scroll: once the row
+        // has focus, the arrow keys move it.
+        tabIndex={edges.fits ? undefined : 0}
       >
-        <div className="reviews__track">
-          <ul className="reviews__set">
-            {REVIEWS.map((review) => (
-              <ReviewCard review={review} key={review.id} />
-            ))}
-          </ul>
-
-          {reduced ? null : (
-            <ul className="reviews__set" aria-hidden="true">
-              {REVIEWS.map((review) => (
-                <ReviewCard review={review} key={review.id} />
-              ))}
-            </ul>
-          )}
-        </div>
+        {/* role="list" because Safari drops list semantics from a list that
+            is styled list-style: none. */}
+        <ul className="reviews__list" role="list">
+          {REVIEWS.map((review) => (
+            <ReviewCard review={review} key={review.id} />
+          ))}
+        </ul>
       </div>
 
       <footer className="reviews__foot">
         <p className="reviews__note">
-          Shared with each client&rsquo;s permission, exactly as sent, first
-          names only. These describe individual experiences, not a promise of
-          results.
+          Shared with each client&rsquo;s permission, under first names only.
+          Spelling and grammar have been corrected. These describe individual
+          experiences, not a promise of results.
         </p>
       </footer>
     </section>

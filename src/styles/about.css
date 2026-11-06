@@ -165,6 +165,37 @@
   margin-bottom: 0.85em;
 }
 
+/* Mitali's personal transformation before/after photographs */
+.about__transformations {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 1.6em 0 1.8em;
+}
+
+.about__transformation-card {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(56, 56, 50, 0.14);
+  background: #ffffff;
+  box-shadow: 0 4px 18px -4px rgba(34, 35, 31, 0.08);
+  transition: transform 260ms ease, box-shadow 260ms ease;
+}
+
+.about__transformation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -6px rgba(34, 35, 31, 0.13);
+}
+
+.about__transformation-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1200 / 828;
+  object-fit: cover;
+}
+
 /* What the whole story turns on, so it is set apart: display italic in the
    olive that small type can carry, on a stitched rule. */
 .about__story .about__realisation {
@@ -231,6 +262,12 @@
 @media (max-width: 640px) {
   .about {
     --measure: none;
+  }
+
+  .about__transformations {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin: 1.3em 0 1.5em;
   }
 }
 

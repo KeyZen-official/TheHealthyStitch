@@ -5,7 +5,8 @@ import useInView from '../hooks/useInView.js'
  * About us: Mitali Shah's own account of how she came to nutrition.
  *
  * The words are hers, exactly as supplied, including the capitalised YOU.
- * The one change is her surname in the greeting and the caption, as asked.
+ * The changes are her full name in the greeting, as asked, and the caption
+ * under the portrait, which names her as the founder of TheHealthyStitch.
  * Only the typography is ours: the realisation she builds up to gets a
  * stitched rule, and the last two lines are set larger as the sign-off.
  */
@@ -21,12 +22,12 @@ export default function AboutSection() {
     >
       <header className="about__head">
         <p className="about__eyebrow">
-          <span>About us</span>
+          <span>About Us</span>
           <span className="about__rule" aria-hidden="true" />
         </p>
 
         <h2 className="about__headline" id="about-headline">
-          My story, my <em>journey</em>
+          My Story, My <em>Journey</em>
         </h2>
       </header>
 
@@ -44,15 +45,15 @@ export default function AboutSection() {
           </div>
           <figcaption className="about__caption">
             <span className="about__caption-name">Mitali Shah</span>
-            Nutritionist &middot; Diploma in Nutrition
+            Founder of TheHealthyStitch
           </figcaption>
         </figure>
 
         <div className="about__story">
-          <p className="about__hello">
-            Hello! I&rsquo;m Mitali Shah, the nutritionist behind The Healthy
-            Stitch.
-          </p>
+          <h3 className="about__hello">
+            The Story Behind <br />
+            TheHealthyStitch
+          </h3>
 
           <p>
             My journey towards nutrition wasn&rsquo;t just about learning what
@@ -69,6 +70,31 @@ export default function AboutSection() {
             Along the way, I began questioning the myths I had believed about
             weight loss and realised something important:
           </p>
+
+          <div className="about__transformations">
+            <figure className="about__transformation-card">
+              <img
+                src="/assets/transformations/transformation-05.jpg"
+                alt="Mitali Shah personal transformation before and after"
+                className="about__transformation-img"
+                width="1200"
+                height="828"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+            <figure className="about__transformation-card">
+              <img
+                src="/assets/transformations/transformation-06.jpg"
+                alt="Mitali Shah healthy lifestyle transformation before and after"
+                className="about__transformation-img"
+                width="1200"
+                height="828"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+          </div>
 
           <p className="about__realisation">
             Weight loss isn&rsquo;t about following a temporary diet.
@@ -90,7 +116,7 @@ export default function AboutSection() {
           </p>
 
           <p>
-            Through The Healthy Stitch, I want to help people understand that
+            Through TheHealthyStitch, I want to help people understand that
             healthy eating doesn&rsquo;t mean giving up their favourite foods,
             following extreme diets or constantly worrying about calories.
           </p>
